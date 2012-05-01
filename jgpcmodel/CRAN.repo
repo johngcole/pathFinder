@@ -1,0 +1,4 @@
+[CRAN]
+name=CRAN repository
+baseurl=http://cran.hostingzero.com/bin/linux/redhat/fedora7/i386/
+enabled=0

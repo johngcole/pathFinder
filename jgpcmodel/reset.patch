@@ -1,0 +1,114 @@
+*** OdePath.cpp	2011-07-05 18:44:52.349990092 -0400
+--- OdePath.cpp~	2011-07-03 09:30:14.319982857 -0400
+***************
+*** 121,129 ****
+  	destination = path->arcPoint(att[2] + courseChange,currentpos.px,currentpos.py,4.0);
+  	//printf("OdePath: dodging obs at %f %f from %f to heading %f\n",p[0],p[1],
+  	//   att[2],att[2] + courseChange);
+- 	//delay = 0;
+-       } /* else if (delay++ > 28) { // no obstacles quit dodging after short delay
+  	delay = 0;
+  	// this brings us back toward the obstacle too quickly need to keep dodging for 
+  	// a couple of extra counts
+  	if (dodging) {
+--- 121,134 ----
+  	destination = path->arcPoint(att[2] + courseChange,currentpos.px,currentpos.py,4.0);
+  	//printf("OdePath: dodging obs at %f %f from %f to heading %f\n",p[0],p[1],
+  	//   att[2],att[2] + courseChange);
+  	delay = 0;
++       } else if (delay++ > 28) { // no obstacles quit dodging after short delay
++ 	delay = 0;
++ 	/*
++ 	spd = path->_ode->getSpeed();
++ 	if (spd < 5.0) 
++ 	  path->_ode->adjustSpeed(1.1*spd);
++ 	*/
+  	// this brings us back toward the obstacle too quickly need to keep dodging for 
+  	// a couple of extra counts
+  	if (dodging) {
+***************
+*** 131,137 ****
+  	}
+  	dodging = false;
+  	}
+!     } */
+      if (numWaypoints > 0) {
+        // adjust speed and direction based on heading
+        //printf("Thread print pos[0-2] %f, %f, %f\n",pos[0],pos[1],pos[2]);
+--- 136,142 ----
+  	}
+  	dodging = false;
+  	}
+!     }
+      if (numWaypoints > 0) {
+        // adjust speed and direction based on heading
+        //printf("Thread print pos[0-2] %f, %f, %f\n",pos[0],pos[1],pos[2]);
+***************
+*** 178,213 ****
+        //if (path->_ode->distanceRemaining(currentpos,destination) < 1.0 || 
+        //  currentpos.px > destination.px && !dodging) {
+  
+!       //if (path->_ode->distanceRemaining(currentpos,destination) < 1.9  && !dodging) {
+!       if (path->_ode->distanceRemaining(currentpos,destination) < 1.9) {
+! 	if (!dodging) {
+! 	  if (wpcounter < numWaypoints-1) { 
+! 	    // move to next waypoint
+! 	    wpcounter++;
+! 	    destination.px = waypoints[wpcounter].px;
+! 	    destination.py = waypoints[wpcounter].py;
+! 	    
+! 	    printf("waypoint change wp %i %f %f cp %f %f\n",wpcounter,
+! 		   waypoints[wpcounter].px,waypoints[wpcounter].py,
+! 		   currentpos.px,currentpos.py);
+! 	  } else { // reached last waypoint wrap around to first one again
+! 	    // stop
+! 	    path->_ode->setSpeed(0.0);
+! 	    /*
+! 	      wpcounter = 0;
+! 	      destination.px = waypoints[wpcounter].px;
+! 	      destination.py = waypoints[wpcounter].py;
+! 	    */
+! 	  }
+! 	} else {
+! 	  dodging = false;
+! 	  destination = waypoints[wpcounter];
+! 	}	   
+        
+-       }
+      }
+  
+!     } 
+      usleep(10);
+    }
+  
+--- 183,212 ----
+        //if (path->_ode->distanceRemaining(currentpos,destination) < 1.0 || 
+        //  currentpos.px > destination.px && !dodging) {
+  
+!       if (path->_ode->distanceRemaining(currentpos,destination) < 1.9  && !dodging) {
+! 	if (wpcounter < numWaypoints-1) { 
+! 	  // move to next waypoint
+! 	  wpcounter++;
+! 	  destination.px = waypoints[wpcounter].px;
+! 	  destination.py = waypoints[wpcounter].py;
+! 	  
+! 	  printf("waypoint change wp %i %f %f cp %f %f\n",wpcounter,
+! 		 waypoints[wpcounter].px,waypoints[wpcounter].py,
+! 		 currentpos.px,currentpos.py);
+! 	} else { // reached last waypoint wrap around to first one again
+! 	  // stop
+! 	  path->_ode->setSpeed(0.0);
+! 	  /*
+! 	  wpcounter = 0;
+! 	  destination.px = waypoints[wpcounter].px;
+! 	  destination.py = waypoints[wpcounter].py;
+! 	  */
+! 	}	  
+!       } 
+        
+      }
+  
+!     
+      usleep(10);
+    }
+  

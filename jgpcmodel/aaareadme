@@ -1,0 +1,22 @@
+latest complile command
+
+jgc 64 bit compile command
+g++  -o t3 onecar.cpp solidobstacle.cpp car.cpp jPoly.cpp OdeInsSensor.cpp OdePathIns.cpp OdePath.cpp OdePathRadar.cpp OdeRadarSensor.cpp radar.cpp /usr/lib64/libode.so ../drawstuff/lib/libdstuff_64.a -lGL -lGLU -lglut -pthread
+
+
+add -g to get debugger symbols
+
+gdb t3
+gdb> break Radar::segmentsIntersect
+run
+step
+c
+
+creating patch files for updates
+cp dest*cpp test.cpp
+emacs test.cpp
+
+diff -c destworld-v1.6.cpp test.cpp > p1.patch
+patch destworld-v1.6.cpp <p1.patch
+ 
+
