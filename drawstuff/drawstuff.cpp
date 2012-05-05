@@ -133,13 +133,13 @@ static void skipWhiteSpace (char *filename, FILE *f)
   int c,d;
   for(;;) {
     c = fgetc(f);
-    if (c==EOF) dsError ("unexpected end of file in \"%s\"",filename);
+    if (c==EOF) printf ("unexpected end of file in \"%s\"",filename);
 
     // skip comments
     if (c == '#') {
       do {
 	d = fgetc(f);
-	if (d==EOF) dsError ("unexpected end of file in \"%s\"",filename);
+	if (d==EOF) printf ("unexpected end of file in \"%s\"",filename);
       } while (d != '\n');
       continue;
     }
@@ -160,7 +160,7 @@ static int readNumber (char *filename, FILE *f)
   int c,n=0;
   for(;;) {
     c = fgetc(f);
-    if (c==EOF) dsError ("unexpected end of file in \"%s\"",filename);
+    if (c==EOF) printf ("unexpected end of file in \"%s\"",filename);
     if (c >= '0' && c <= '9') n = n*10 + (c - '0');
     else {
       ungetc (c,f);
@@ -173,11 +173,11 @@ static int readNumber (char *filename, FILE *f)
 Image::Image (char *filename)
 {
   FILE *f = fopen (filename,"rb");
-  if (!f) dsError ("Can't open image file `%s'",filename);
+  if (!f) printf ("Can't open image file `%s'",filename);
 
   // read in header
   if (fgetc(f) != 'P' || fgetc(f) != '6')
-    dsError ("image file \"%s\" is not a binary PPM (no P6 header)",filename);
+    printf ("image file \"%s\" is not a binary PPM (no P6 header)",filename);
   skipWhiteSpace (filename,f);
 
   // read in image parameters
@@ -189,9 +189,9 @@ Image::Image (char *filename)
 
   // check values
   if (image_width < 1 || image_height < 1)
-    dsError ("bad image file \"%s\"",filename);
+    printf ("bad image file \"%s\"",filename);
   if (max_value != 255)
-    dsError ("image file \"%s\" must have color range of 255",filename);
+    printf ("image file \"%s\" must have color range of 255",filename);
 
   // read either nothing, LF (10), or CR,LF (13,10)
   int c = fgetc(f);
@@ -208,7 +208,7 @@ Image::Image (char *filename)
   // read in rest of data
   image_data = new byte [image_width*image_height*3];
   if (fread (image_data,image_width*image_height*3,1,f) != 1)
-    dsError ("Can not read data from image file `%s'",filename);
+    printf ("Can not read data from image file `%s'",filename);
   fclose (f);
 }
 
@@ -1078,7 +1078,7 @@ static void drawPyramidGrid()
 
 void dsDrawFrame (int width, int height, dsFunctions *fn, int pause)
 {
-  if (current_state < 1) dsDebug ("internal error");
+  if (current_state < 1) printf ("internal error");
   current_state = 2;
 
   // setup stuff
@@ -1259,7 +1259,7 @@ extern "C" void dsSimulationLoop (int argc, char **argv,
 				  int window_width, int window_height,
 				  dsFunctions *fn)
 {
-  if (current_state != 0) dsError ("dsSimulationLoop() called more than once");
+  if (current_state != 0) printf ("dsSimulationLoop() called more than once\n");
   current_state = 1;
 
   // look for flags that apply to us
@@ -1275,7 +1275,7 @@ extern "C" void dsSimulationLoop (int argc, char **argv,
   }
 
   if (fn->version > DS_VERSION)
-    dsDebug ("bad version number in dsFunctions structure");
+    printf ("bad version number in dsFunctions structure\n");
 
   initMotionModel();
   dsPlatformSimLoop (window_width,window_height,fn,initial_pause);
@@ -1286,7 +1286,7 @@ extern "C" void dsSimulationLoop (int argc, char **argv,
 
 extern "C" void dsSetViewpoint (float xyz[3], float hpr[3])
 {
-  if (current_state < 1) dsError ("dsSetViewpoint() called before simulation started");
+  if (current_state < 1) printf ("dsSetViewpoint() called before simulation started\n");
   if (xyz) {
     view_xyz[0] = xyz[0];
     view_xyz[1] = xyz[1];
@@ -1303,7 +1303,7 @@ extern "C" void dsSetViewpoint (float xyz[3], float hpr[3])
 
 extern "C" void dsGetViewpoint (float xyz[3], float hpr[3])
 {
-  if (current_state < 1) dsError ("dsGetViewpoint() called before simulation started");
+  if (current_state < 1) printf ("dsGetViewpoint() called before simulation started\n");
   if (xyz) {
     xyz[0] = view_xyz[0];
     xyz[1] = view_xyz[1];
@@ -1319,14 +1319,14 @@ extern "C" void dsGetViewpoint (float xyz[3], float hpr[3])
 
 extern "C" void dsSetTexture (int texture_number)
 {
-  if (current_state != 2) dsError ("drawing function called outside simulation loop");
+  if (current_state != 2) printf ("drawing function called outside simulation loop");
   tnum = texture_number;
 }
 
 
 extern "C" void dsSetColor (float red, float green, float blue)
 {
-  if (current_state != 2) dsError ("drawing function called outside simulation loop");
+  if (current_state != 2) printf ("drawing function called outside simulation loop");
   color[0] = red;
   color[1] = green;
   color[2] = blue;
@@ -1337,7 +1337,7 @@ extern "C" void dsSetColor (float red, float green, float blue)
 extern "C" void dsSetColorAlpha (float red, float green, float blue,
 				 float alpha)
 {
-  if (current_state != 2) dsError ("drawing function called outside simulation loop");
+  if (current_state != 2) printf ("drawing function called outside simulation loop");
   color[0] = red;
   color[1] = green;
   color[2] = blue;
@@ -1348,7 +1348,7 @@ extern "C" void dsSetColorAlpha (float red, float green, float blue,
 extern "C" void dsDrawBox (const float pos[3], const float R[12],
 			   const float sides[3])
 {
-  if (current_state != 2) dsError ("drawing function called outside simulation loop");
+  if (current_state != 2) printf ("drawing function called outside simulation loop");
   setupDrawingMode();
   glShadeModel (GL_FLAT);
   setTransform (pos,R);
@@ -1372,7 +1372,7 @@ extern "C" void dsDrawConvex (const float pos[3], const float R[12],
 			      unsigned int _pointcount,
 			      unsigned int *_polygons)
 {
-  if (current_state != 2) dsError ("drawing function called outside simulation loop");
+  if (current_state != 2) printf ("drawing function called outside simulation loop");
   setupDrawingMode();
   glShadeModel (GL_FLAT);
   setTransform (pos,R);
@@ -1393,7 +1393,7 @@ extern "C" void dsDrawConvex (const float pos[3], const float R[12],
 extern "C" void dsDrawSphere (const float pos[3], const float R[12],
 			      float radius)
 {
-  if (current_state != 2) dsError ("drawing function called outside simulation loop");
+  if (current_state != 2) printf ("drawing function called outside simulation loop");
   setupDrawingMode();
   glEnable (GL_NORMALIZE);
   glShadeModel (GL_SMOOTH);
@@ -1430,7 +1430,7 @@ extern "C" void dsDrawTriangle (const float pos[3], const float R[12],
 				const float *v0, const float *v1,
 				const float *v2, int solid)
 {
-  if (current_state != 2) dsError ("drawing function called outside simulation loop");
+  if (current_state != 2) printf ("drawing function called outside simulation loop");
   setupDrawingMode();
   glShadeModel (GL_FLAT);
   setTransform (pos,R);
@@ -1442,7 +1442,7 @@ extern "C" void dsDrawTriangle (const float pos[3], const float R[12],
 extern "C" void dsDrawCylinder (const float pos[3], const float R[12],
 				float length, float radius)
 {
-  if (current_state != 2) dsError ("drawing function called outside simulation loop");
+  if (current_state != 2) printf ("drawing function called outside simulation loop");
   setupDrawingMode();
   glShadeModel (GL_SMOOTH);
   setTransform (pos,R);
@@ -1464,7 +1464,7 @@ extern "C" void dsDrawCylinder (const float pos[3], const float R[12],
 extern "C" void dsDrawCapsule (const float pos[3], const float R[12],
 				      float length, float radius)
 {
-  if (current_state != 2) dsError ("drawing function called outside simulation loop");
+  if (current_state != 2) printf ("drawing function called outside simulation loop");
   setupDrawingMode();
   glShadeModel (GL_SMOOTH);
   setTransform (pos,R);
@@ -1514,7 +1514,7 @@ extern "C" void dsDrawConvexD (const double pos[3], const double R[12],
 			       unsigned int _pointcount,
 			       unsigned int *_polygons)
 {
-  if (current_state != 2) dsError ("drawing function called outside simulation loop");
+  if (current_state != 2) printf ("drawing function called outside simulation loop");
   setupDrawingMode();
   glShadeModel (GL_FLAT);
   setTransformD (pos,R);

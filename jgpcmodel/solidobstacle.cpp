@@ -118,15 +118,15 @@ void Obstacles::draw() {
     case 1:
     case 2:
       dGeomBoxGetLengths (gid[i],ss);
-      dsDrawBox (dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),ss);
+      dsDrawBoxD (dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),ss);
       break;
     case 3:
     case 4:
-      dsDrawCylinder(dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),height[i],width[i]);
+      dsDrawCylinderD(dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),height[i],width[i]);
       break;
     case 5:
     case 6:
-      dsDrawSphere(dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),2.0);
+      dsDrawSphereD(dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),2.0);
     }
 
   }
