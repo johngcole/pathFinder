@@ -5,14 +5,18 @@ ifeq ($(HOST), gray-ubnetbook)
 CC = g++
 OUT_EXE = robot
 OUT_DIR = out
+DEFINES = -DdDOUBLE
 
 else 
-#ifeq ($(shell hostname), INSERT_HOSTNAME) 
+ifeq ($(shell hostname), e6500.lgltex.lgl) 
+CC = g++
+OUT_EXE = car
+OUT_DIR = out
 
 
-#	else
+else
 $(error Unknown host: $(HOST))
-#	endif
+endif
 endif
 
 
@@ -24,7 +28,6 @@ ifeq ($(BUILD_TYPE), debug)
 else
 	CFLAGS += -O2
 endif
-DEFINES = -DdDOUBLE
 INC = 
 LIBS = -lode
 LIBS += -ldstuff -lX11

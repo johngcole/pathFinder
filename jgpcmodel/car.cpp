@@ -1,5 +1,15 @@
 #include "car.h"
 
+// select correct drawing functions
+
+#ifdef dDOUBLE
+#define dsDrawBox dsDrawBoxD
+#define dsDrawSphere dsDrawSphereD
+#define dsDrawCylinder dsDrawCylinderD
+#define dsDrawCapsule dsDrawCapsuleD
+#endif
+
+
 
 void Car::makeCar(dWorldID world, dReal x, dReal y, dReal z,float len, float wid, float ht, float wrad) {
   int i, bodyI = 0, boxI = 0, jointI = 0, sphI = 0;
@@ -276,17 +286,17 @@ void Car::draw() {
   //dsSetColor (0,0.65,0);
 
   dReal sides[3] = {clength,cwidth,cheight};
-  dsDrawBoxD (dGeomGetPosition(box[0]),dGeomGetRotation(box[0]),sides);
+  dsDrawBox (dGeomGetPosition(box[0]),dGeomGetRotation(box[0]),sides);
   b = (color[1] & 255) / 255.0;
   g = ((color[1] >> 8) & 255) / 255.0;
   r = ((color[1] >> 16) & 255) /255.0;
   dsSetColor(r,g,b);
   dVector3 smsides;
   dGeomBoxGetLengths (box[1],smsides);
-  dsDrawBoxD (dGeomGetPosition(box[1]),dGeomGetRotation(box[1]),smsides);
+  dsDrawBox (dGeomGetPosition(box[1]),dGeomGetRotation(box[1]),smsides);
   // set wheels to black
   dsSetColor (1,1,1);
-  for (i=0; i< 4; i++) dsDrawCylinderD (dGeomGetPosition(sphere[i]),
+  for (i=0; i< 4; i++) dsDrawCylinder (dGeomGetPosition(sphere[i]),
 					   dGeomGetRotation(sphere[i]),
 					     0.02f,wradius);
 

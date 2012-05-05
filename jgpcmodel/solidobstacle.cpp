@@ -1,6 +1,17 @@
 
 #include "solidobstacle.h"
 
+// select correct drawing functions
+
+#ifdef dDOUBLE
+#define dsDrawBox dsDrawBoxD
+#define dsDrawSphere dsDrawSphereD
+#define dsDrawCylinder dsDrawCylinderD
+#define dsDrawCapsule dsDrawCapsuleD
+#endif
+
+
+
 void Obstacles::init() {
   count = 0;
 }
@@ -118,15 +129,15 @@ void Obstacles::draw() {
     case 1:
     case 2:
       dGeomBoxGetLengths (gid[i],ss);
-      dsDrawBoxD (dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),ss);
+      dsDrawBox (dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),ss);
       break;
     case 3:
     case 4:
-      dsDrawCylinderD(dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),height[i],width[i]);
+      dsDrawCylinder(dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),height[i],width[i]);
       break;
     case 5:
     case 6:
-      dsDrawSphereD(dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),2.0);
+      dsDrawSphere(dGeomGetPosition(gid[i]),dGeomGetRotation(gid[i]),2.0);
     }
 
   }

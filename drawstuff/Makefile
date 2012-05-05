@@ -9,12 +9,17 @@ OUT_DIR = .
 OUT_LIB = libdstuff.a
 
 else 
-#ifeq ($(shell hostname), INSERT_HOSTNAME) 
+ifeq ($(shell hostname), e6500.lgltex.lgl) 
+DEPLOY_LIB_DIR = /usr/lib64
+DEPLOY_HDR_DIR = /usr/include/drawstuff
+CC = g++
+OUT_DIR = .
+OUT_LIB = libdstuff.a
 
 
-#	else
+else
 $(error Unknown host: $(HOST))
-#	endif
+endif
 endif
 
 
