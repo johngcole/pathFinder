@@ -7,3 +7,4 @@ c1*.csv
 *.pdf
 *.repo
 car
+*.Rhistory
