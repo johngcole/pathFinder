@@ -104,6 +104,30 @@ static dGeomID ray;
 
 //static dReal speed=0,steer=0;	// user commands
 
+// temporarily need this function to place the ray in front of the car
+P2D arcPoint(float deg, float x, float y, float r) {
+  P2D pt;
+  /* deg is the heading -- the angle in this formula is the angle between the 
+     heading and the x axis, but since this entire world is turned 90 degrees left
+     the angle will be the angle from the negative y axis and the line to the point
+     on the circle, ie, heading of 360 will cause an angle of 90; 270 will be 180;
+     180 (due negative on x) will be 270; 
+   */
+  float angle;
+  // force degrees to be correct
+  if (deg > 360.0)
+    deg -=  360.0;
+  else if (deg < 0.0)
+    deg += 360.0;
+  
+  angle = 360.0 - deg;
+  
+  // cos and sin expect radians, so angle is mult by pi/180 to conv deg to rad
+  pt.px = r * cos(angle*M_PI/180) + x;
+  pt.py = r * sin(angle*M_PI/180) + y;
+  //cx -= r;
+  return pt;
+}
 
 
 float angleAdjustment(P2D from, P2D to) {
@@ -298,7 +322,10 @@ static void simLoop (int pause)
   float hdgDeg = c1->getHeading();
   // 5th field is direction in radians
   dRFromAxisAndAngle (candir,0,0,1,hdgDeg*M_PI/180);
-  dGeomRaySet (ray,cpos[0],cpos[1],0.10,candir[0],candir[1],candir[2]);
+  // to set the ray in front of the car so that it does not collide with car
+  //  when sweeping an arc need to find location of center point on car
+  P2D cpt = arcPoint(hdgDeg,cpos[0],cpos[1],LENGTH/2.0);
+  dGeomRaySet (ray,cpt.px,cpt.py,0.10,candir[0],candir[1],candir[2]);
   dVector3 origin,dir;
   dGeomRayGet (ray,origin,dir);
   dReal length = dGeomRayGetLength (ray);
