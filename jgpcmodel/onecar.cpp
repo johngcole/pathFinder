@@ -271,7 +271,7 @@ static void command (int cmd)
 static void simLoop (int pause)
 {
   int i;
-
+  /*
   // adjust viewpoint after 100 iterations and increase speed by 1.3
   if (counter == 100) {
     static float xyz[3] = {1.347f,-2.0213f,2.8800f};
@@ -279,12 +279,14 @@ static void simLoop (int pause)
     dsSetViewpoint (xyz,hpr);
     //speed += 1.3;
   } 
+  */
 
-  if (car2follow != NULL && counter % 250 == 0) {
+  if (car2follow != NULL && counter % 125 == 0) {
     const dReal *t = car2follow->getCarPos();
     float abc[3] = {t[0]-5.0+1.347,t[1]-1.0-2.0213,2.8800};
     float def[3] = {44.0000f,-29.0000f,0.0000f};
-    printf("resetting viewpoint at %i x,y %f,%f\n",counter,t[0],t[1]);
+    if (DEBUG)
+      printf("resetting viewpoint at %i x,y %f,%f\n",counter,t[0],t[1]);
     dsSetViewpoint (abc,def);
   }  
   if (!pause) {

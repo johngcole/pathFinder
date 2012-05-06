@@ -6,12 +6,22 @@ CC = g++
 OUT_EXE = robot
 OUT_DIR = out
 DEFINES = -DdDOUBLE
+CFLAGS = -Wall -c
+ifeq ($(BUILD_TYPE), debug)
+	CFLAGS += -g
+else
+	CFLAGS += -O2
+endif
 
 else 
 ifeq ($(shell hostname), e6500.lgltex.lgl) 
 CC = g++
 OUT_EXE = car
 OUT_DIR = out
+CFLAGS = -Wall -c
+ifeq ($(BUILD_TYPE), debug)
+	CFLAGS += -g
+endif
 
 
 else
@@ -22,15 +32,15 @@ endif
 
 BUILD_TYPE = release  # debug or release
 
-CFLAGS = -Wall -c
-ifeq ($(BUILD_TYPE), debug)
-	CFLAGS += -g
-else
-	CFLAGS += -O2
-endif
 INC = 
 LIBS = -lode
+ifeq ($(HOST), gray-ubnetbook)
 LIBS += -ldstuff -lX11
+else 
+ifeq ($(shell hostname), e6500.lgltex.lgl) 
+LIBS += -ldstuff 
+endif
+endif
 LIBS += -lGL -lGLU -lglut
 LIBS += -lpthread
 # LIBS += -lboost_date_time
