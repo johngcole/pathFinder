@@ -1,4 +1,7 @@
 *~
 *.o
 *.a
+*.swp
+*.project
+*.cproject
 */out
