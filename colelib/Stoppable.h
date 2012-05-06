@@ -16,9 +16,14 @@ public:
 	Stoppable();
 	~Stoppable();
 
-	virtual void Start()= 0;
+	virtual void Start() = 0;
 	void Stop();
+	void Join();
+
 protected:
+	void startThread( void func(void*), void* arg );
+
+private:
 	boost::thread_group _threads;
 };
 
