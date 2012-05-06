@@ -33,6 +33,8 @@ add obstacle class object
 add car as class object
 move waypoints and commands to car object
 add tower object
+add a ray to the nose of the car to observe its collisions
+
 */
 
 
@@ -94,6 +96,10 @@ OdeInsSensor *ins;
 OdeRadarSensor *rad;
 OdePath *path;
 
+// ray for testing
+static dGeomID ray;
+
+
 // things that the user controls
 
 //static dReal speed=0,steer=0;	// user commands
@@ -140,35 +146,13 @@ static void nearCallback (void *data, dGeomID o1, dGeomID o2)
 
   // test for future implementation of ray class
   // (ray is class 5 box is 1 space is 10)
-  /*
-  class1 = dGeomGetClass(o1);
-  class2 = dGeomGetClass(o2);
-  if (class1 == 5 || class2  == 5) {
-    if (class1 != 10 && class2 != 10) {
-      n = dCollide(o1,o2,N,&contact[0].geom,sizeof(dContact));
-      dContactGeom& cgArr = contact[0].geom;
-      //printf("Ray collision detected at %i o1 %i o2 %i numContacts %i\n",counter,c1,c2,n);
-      if (n > 0) {
-	printf("geom pos %f,%f,%f\n",cgArr.pos[0],cgArr.pos[1],cgArr.pos[2]);
-	printf("geom depth = %f\n",cgArr.depth);
-      }
+
+  dContactGeom rhit;
+  if (dGeomGetClass (o1) == dRayClass || dGeomGetClass (o2) == dRayClass) {
+    if (dCollide (o1,o2,1,&rhit,sizeof(dContactGeom))) {
+      printf("ray collision at %f,%f,%f\n", rhit.pos[0],rhit.pos[1],rhit.pos[2]);
     }
-    return;
-  }
-  */
-  // test for space collisions (cars are defined as spaces) test is more efficient
-  /*
-  if (dGeomIsSpace (o1) || dGeomIsSpace (o2)) { 
-    // colliding a space with something :
-    dSpaceCollide2 (o1, o2, data,&nearCallback); 
- 
-    // collide all geoms internal to the space(s)
-    if (dGeomIsSpace (o1))
-      dSpaceCollide ((dSpaceID)o1, data, &nearCallback);
-    if (dGeomIsSpace (o2))
-      dSpaceCollide ((dSpaceID)o2, data, &nearCallback);
-    
-      } else {*/
+  } else {
     n = dCollide (o1,o2,N,&contact[0].geom,sizeof(dContact));
     if (n > 0) {
       for (i=0; i<n; i++) {
@@ -197,7 +181,7 @@ static void nearCallback (void *data, dGeomID o1, dGeomID o2)
       }
       //}
   }
-
+  }
 }
 
 
@@ -307,6 +291,20 @@ static void simLoop (int pause)
   
   c1->draw();
   //c2->draw();
+
+  dMatrix3 candir;
+  const dReal* cpos = c1->getCarPos();
+  //const dReal* catt = c1->getCarAttitude();
+  float hdgDeg = c1->getHeading();
+  // 5th field is direction in radians
+  dRFromAxisAndAngle (candir,0,0,1,hdgDeg*M_PI/180);
+  dGeomRaySet (ray,cpos[0],cpos[1],0.10,candir[0],candir[1],candir[2]);
+  dVector3 origin,dir;
+  dGeomRayGet (ray,origin,dir);
+  dReal length = dGeomRayGetLength (ray);
+  for (int j=0; j<3; j++) dir[j] = dir[j]*length + origin[j];
+  dsDrawLine (origin,dir);
+
   
   dVector3 ss;
   
@@ -369,7 +367,17 @@ int main (int argc, char **argv)
     printf("Could not open output file\n");
   else
     c1->recordTrack(ofile);
-  
+
+  // create ray on front of car
+  ray = dCreateRay(space,10);
+  dMatrix3 candir;
+  const dReal* cpos = c1->getCarPos();
+  const dReal* catt = c1->getCarAttitude();
+  // 5th field is direction in radians
+  dRFromAxisAndAngle (candir,0,0,1,catt[2]);
+  dGeomRaySet (ray,cpos[0]+WIDTH/2.0,cpos[1]+LENGTH/2.0,0.15,candir[0],candir[1],candir[2]);
+
+
   /*
   c2 = new Car(LENGTH*1.5,WIDTH*1.3,HEIGHT*1.1,RADIUS*1.2);
   c2->setSpace(space);
