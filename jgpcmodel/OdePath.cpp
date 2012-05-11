@@ -54,12 +54,15 @@ void* OdePath::PathThread(void* args) {
   double pos[3];
   double att[3];
   P2D *wpp = waypoints;
-  double testInterval = 0.25;
+  double testInterval = 0.15;
   float adjsteer;
   P2D wpsave;
   bool dodging = false;
   int delay = 0;
-  float spd = 0.0; 
+  // create a variable to see if we have seen this radar hit before
+  int prevCval = 0;
+  // need to change this when rebuilding with ray based radar
+  bool fixedobsbuild = false;
 
   gettimeofday(&lastSample, NULL);
   numWaypoints = loadWayPointFile("waypoints.dat",wpp);
@@ -91,7 +94,12 @@ void* OdePath::PathThread(void* args) {
       currentpos.py = pos[1];
 
       // check the radar for obstacles
-      if (path->_pradar->getHitCount() > 0) {
+      //if (path->_pradar->getHitCount() > 0) {
+      // counter will always be larger if a new radar hit
+      int counter = path->_pradar->getHitCount();
+      if (counter > prevCval) {
+	if (!fixedobsbuild)
+	  prevCval = counter;
 	p = path->_pradar->getHitPos();
 	// see if obs is right or left of our line
 	P2D ocontact;
@@ -106,21 +114,21 @@ void* OdePath::PathThread(void* args) {
 	*/
 	float courseChange;
 	// guard against 350 vs 10 in headings
-	if (fabsf(att[2] - ohead) > 45.0) {
+	if (fabsf(att[2] - ohead) >= 45.0) {
 	  if (ohead < 45.0) // obstacle is to the right
 	    courseChange = -45.0;
 	  else
 	    courseChange = 45.0;
 	} else {
-	  courseChange = att[2] < ohead ? -45.0 : 45.0;
+	  courseChange = att[2] <= ohead ? -45.0 : 45.0;
 	}
 	// start avoidance manuvers
 	dodging = true;
 	wpsave = waypoints[wpcounter];
 	// steer left -- simple avoidance
 	destination = path->arcPoint(att[2] + courseChange,currentpos.px,currentpos.py,4.0);
-	//printf("OdePath: dodging obs at %f %f from %f to heading %f\n",p[0],p[1],
-	//   att[2],att[2] + courseChange);
+	printf("OdePath: dodging obs at %f %f from %f to heading %f\n",p[0],p[1],
+	   att[2],att[2] + courseChange);
 	delay = 0;
       } else if (delay++ > 28) { // no obstacles quit dodging after short delay
 	delay = 0;
@@ -145,11 +153,7 @@ void* OdePath::PathThread(void* args) {
       currentpos.px = pos[0];
       currentpos.py = pos[1];
       float heading = att[2];
-      //printf("heading = %f ",heading);
-      // need some fixing here
       float dheading = path->getHeadingToPoint(currentpos, destination);
-      // have we passed the way point?
-      bool passedwp = false;
 
       float pcterror;
       float dhd = (dheading - heading) > 180.0 ? dheading - 360.0 : dheading;
@@ -167,7 +171,7 @@ void* OdePath::PathThread(void* args) {
 	pcterror = (dheading - heading) / 360;
       }
       */
-      pcterror *= 1.75; // step up adjust vs steer
+      pcterror *= 2.15; // step up adjust vs steer
       //printf("dheading - heading %f - %f  = %f\n",dheading,heading,pcterror);
       if (pcterror < -0.0139 || pcterror > 0.0139) { //  5degree error 
 	// steer by amount of error for 5 iterations then return to straight

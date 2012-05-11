@@ -46,7 +46,6 @@ bool jPoly::pointInPoly(P2D click) {
   int i;
   int timesCrossed=0;
   int adder=0;
-  int numberOfPoints;
 		
     // first test vs bbox if it is not in that no need to go further
   if (click.px < bbox.left || click.px > bbox.right || click.py > bbox.top || click.py < bbox.bottom)

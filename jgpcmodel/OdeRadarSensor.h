@@ -14,7 +14,7 @@ using namespace std;
 #include "RadarSubscriber.h"
 #include "OdePathIns.h"
 #include "radar.h"
-
+#include "util.h"
 // 2HZ
 #define RADAR_SAMPLE_RATE   0.5
 
@@ -27,6 +27,8 @@ class OdeRadarSensor {
   void addSubscription(RadarSubscriber *reader);
   void removeSubscription(RadarSubscriber *reader);
   OdePathIns *getPathIns() {return _pins;};
+  void sensorReturn(int cval, double xpos, double ypos, double zpos);
+  bool isScanning() {return _scanning;};
   
   static void *SampleThread(void *args);
   
@@ -35,6 +37,10 @@ class OdeRadarSensor {
   Obstacles *_obs;
   OdePathIns *_pins;
   vector<RadarSubscriber*> _readers;
+  double *_xpos;
+  double *_ypos;
+  double *_zpos;
+  bool _scanning;
 };
 
 #endif 

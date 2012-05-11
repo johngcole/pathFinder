@@ -498,8 +498,7 @@ float Car::YoffsetFromGoal(P2D p2, P2D p1, float gx) {
      gx) and returns the y location along the destination x where the current
      line would intersect
   */
-  float x,y,m;
-  m = (p2.py - p1.py) / (p2.px - p1.px);
+  float m = (p2.py - p1.py) / (p2.px - p1.px);
   return(m*(gx - p1.px) + p1.py);
 }
 

@@ -8,3 +8,4 @@ c1*.csv
 *.repo
 car
 *.Rhistory
+*.patch

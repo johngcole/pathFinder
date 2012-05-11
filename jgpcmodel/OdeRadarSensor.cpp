@@ -3,8 +3,14 @@
 OdeRadarSensor::OdeRadarSensor(Obstacles *obs) {
   _obs = obs;
   _readers.clear();
-  _pins = new OdePathIns();
   // create the pathins needed to get location for radar scans
+  _pins = new OdePathIns();
+  _scanning = true;
+  // initialize lastRadarHit
+  /*
+  for (int i = 0; i < 3; i++)
+    _lastRadarHit[i] = 0.0;
+  */
   pthread_create(&_thread, NULL, SampleThread, (void*)this);
 }
 
@@ -28,6 +34,37 @@ void OdeRadarSensor::removeSubscription(RadarSubscriber *reader) {
       return;
     }
   }
+}
+
+void OdeRadarSensor::sensorReturn(int cval, double xpos, double ypos, double zpos) {
+  vector<RadarSubscriber*>::iterator i;
+  printf("OdeRadarSensor: sensorReturn %d, %f, %f. %f\n",cval,xpos,ypos,zpos);
+  
+  for (i=_readers.begin(); i!=_readers.end(); ++i) {
+	(*i)->AcceptRADAR(cval, xpos, ypos, zpos);
+      }
+  
+  // convert to heading and distance
+  /*
+  double heading = radunit->getHeadingDegrees();
+  dMatrix3 rpos = radunit->getPosition(); 
+  dP2D origin, rhit;
+  origin.px = rpos[0];
+  origin.py = rpos[1];
+  rhit.px = xpos;
+  rhit.py = ypos;
+  double dist = radunit->distanceBetween(origin,rhit);
+  */
+  /* // version that returns distance and bearing
+  for (i=radar->_readers.begin(); i!=radar->_readers.end(); ++i) {
+    (*i)->AcceptRADAR(cval, dist, heading);
+  */
+  // temporary return version 
+  /*
+  for (i=radar->_readers.begin(); i!=radar->_readers.end(); ++i) {
+    (*i)->AcceptRADAR(cval, xpos, ypos, zpos);
+  }
+  */
 }
 
 void* OdeRadarSensor::SampleThread(void* args) {
@@ -69,7 +106,8 @@ void* OdeRadarSensor::SampleThread(void* args) {
       heading = a[2];
       cpos.px = p[0];
       cpos.py = p[1];
-      cval = radunit->scan(rhits,cpos,heading);
+      
+      //cval = radunit->scan(rhits,cpos,heading);
       if (cval > 0) {
 	vals[0] = rhits[0].px;
 	vals[1] = rhits[0].py;
@@ -81,12 +119,13 @@ void* OdeRadarSensor::SampleThread(void* args) {
 	vals[2] = 0.0;
       }
       //radar->_ode->gatherPositionAndAttitude(vals);
+      /*
       for (i=radar->_readers.begin(); i!=radar->_readers.end(); ++i) {
 	(*i)->AcceptRADAR(cval, vals[0], vals[1], vals[2]);
       }
+      */
       gettimeofday(&lastSample, NULL);
     }
-
     usleep(10);
   }
 

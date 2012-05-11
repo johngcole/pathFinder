@@ -5,9 +5,15 @@
 
 // 2D point on the map
 typedef struct {
+  double px;
+  double py;
+} dP2D;
+
+typedef struct {
   float px;
   float py;
 } P2D;
+
 
 typedef struct {
   float left;
