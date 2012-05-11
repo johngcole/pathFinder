@@ -9,3 +9,5 @@ c1*.csv
 car
 *.Rhistory
 *.patch
+*.rej
+*.orig
