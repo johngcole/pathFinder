@@ -46,10 +46,8 @@ add a ray to the nose of the car to observe its collisions
 
 #include "solidobstacle.h"
 #include "car.h"
-//#include "tower.h"
 #include "jPoly.h"
 #include "util.h"
-//#include "radar.h"
 #include "OdePath.h"
 #include "OdeInsSensor.h"
 #include "OdeRadarSensor.h"
@@ -107,9 +105,6 @@ static dGeomID ray;
 
 // things that the user controls
 
-//static dReal speed=0,steer=0;	// user commands
-
-// temporarily need this function to place the ray in front of the car
 P2D arcPoint(float deg, float x, float y, float r) {
   P2D pt;
   /* deg is the heading -- the angle in this formula is the angle between the 
@@ -184,94 +179,38 @@ static void nearCallback (void *data, dGeomID o1, dGeomID o2)
 	contact[i].surface.soft_erp = 0.5;
 	contact[i].surface.soft_cfm = 0.01;
 
-	/* // orig values
-	   contact[i].surface.mu = dInfinity;
-	   contact[i].surface.slip1 = 0.1;
-      contact[i].surface.slip2 = 0.1;
-      contact[i].surface.soft_erp = 0.5;
-      contact[i].surface.soft_cfm = 0.3;
-	*/
 	dJointID c = dJointCreateContact (world,contactgroup,&contact[i]);
 	//dJointID c = dJointCreateContact (world,contactgroup,contact+i);
 	dJointAttach (c,
 		      dGeomGetBody(contact[i].geom.g1),
 		      dGeomGetBody(contact[i].geom.g2));
       }
-      //}
-  }
+     
+    }
   }
 }
 
 
 // start simulation - set viewpoint
 
-static void start()
-{
+static void start() {
   dAllocateODEDataForThread(dAllocateMaskAll);
 
-  //static float xyz[3] = {0.8317f,-0.9817f,0.8000f}; // orig
-  //static float hpr[3] = {121.0000f,-27.5000f,0.0000f}; //orig
   static float xyz[3] = {1.317f,-1.9817f,0.8000f};
   static float hpr[3] = {100.0000f,-27.5000f,0.0000f};
   dsSetViewpoint (xyz,hpr);
-  /*
-    printf ("Press:\t'a' to increase speed.\n"
-	  "\t'z' to decrease speed.\n"
-	  "\t',' to steer left.\n"
-	  "\t'.' to steer right.\n"
-	  "\t' ' to reset speed and steering.\n"
-	  "\t'1' to save the current state to 'state.dif'.\n");
-  // print the waypoint info
-  
-  if (numWaypoints > 0)
-    printf("waypoint change wp %i %f %f cp %f %f\n",wpcounter,
-	   waypoints[wpcounter].px,waypoints[wpcounter].py,
-	   currentpos.px,currentpos.py);
-  */
 }
 
 
 // called when a key pressed
 
-static void command (int cmd)
-{
-  /*
-  switch (cmd) {
-  case 'a': case 'A':
-    speed += 0.3;
-    break;
-  case 'z': case 'Z':
-    speed -= 0.3;
-    break;
-  case ',':
-    steer -= 0.5;
-    break;
-  case '.':
-    steer += 0.5;
-    break;
-  case 'c':
-    printf("current counter = %i\n",counter);
-    break;
-  case ' ':
-    speed = 0;
-    steer = 0;
-    break;
-  case '1': {
-      FILE *f = fopen ("state.dif","wt");
-      if (f) {
-        dWorldExportDIF (world,f,"");
-        fclose (f);
-      }
-    }
-  }
-  */
+static void command (int cmd) {
 }
 
 
 // simulation loop
 
-static void simLoop (int pause)
-{
+static void simLoop (int pause) {
 
   if (car2follow != NULL && counter % 125 == 0) {
     const dReal *t = car2follow->getCarPos();
@@ -284,11 +223,8 @@ static void simLoop (int pause)
   if (!pause) {
     // catch any speed / steer changes from keyboard
     c1->step();
-    //c2->step(speed,steer);
     dSpaceCollide (space,0,&nearCallback);
     dWorldStep (world,0.05);
-    
-
     // remove all contact joints
     dJointGroupEmpty (contactgroup);
   }
@@ -338,8 +274,7 @@ static void simLoop (int pause)
 }
 
 
-int main (int argc, char **argv)
-{
+int main (int argc, char **argv) {
   FILE *ofile;
   dMass m;
 
@@ -393,18 +328,6 @@ int main (int argc, char **argv)
   dRFromAxisAndAngle (candir,0,0,1,catt[2]);
   dGeomRaySet (ray,cpos[0]+WIDTH/2.0,cpos[1]+LENGTH/2.0,0.15,candir[0],candir[1],candir[2]);
 
-
-  /*
-  c2 = new Car(LENGTH*1.5,WIDTH*1.3,HEIGHT*1.1,RADIUS*1.2);
-  c2->setSpace(space);
-  c2->makeCar(world,1.0, 2.0,STARTZ);
-  c2->setBodyColor(0,0x539DC2);   // carolina blue
-  c2->loadCommandFile("cmd-1.cmd");
-  c2->addRadar(4.5);
-  c2->radar->connectObstacles(obs);
-  if (c2->hasRadar)
-    printf("Car has radar\n");
-  */
   car2follow = c1;
 
   ins = new OdeInsSensor(c1);
@@ -422,24 +345,9 @@ int main (int argc, char **argv)
   }
 
 
-
-  /*
-  // independent radar station
-  rad = new Radar(4.0);
-  BOGEY ht;
-  P2D pt = {2.0,7.0};
-  rad->connectObstacles(obs);
-  for (i = 360; i > 0; i -= 30) {
-    rad->scan(&ht,pt,(float) i);
-    printf("Scan at %i found %i bogeys\n",i,rad->getHitCount());
-  }
-  */
-
   // run simulation
-  //dsSimulationLoop (argc,argv,352,288,&fn);
   dsSimulationLoop (argc,argv,640,524,&fn);
 
-  //printf("SimLoop ended -- control returned to main\n");
   fclose(ofile);
 
   dJointGroupDestroy (contactgroup);

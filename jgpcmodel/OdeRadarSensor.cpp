@@ -6,11 +6,6 @@ OdeRadarSensor::OdeRadarSensor(Obstacles *obs) {
   // create the pathins needed to get location for radar scans
   _pins = new OdePathIns();
   _scanning = true;
-  // initialize lastRadarHit
-  /*
-  for (int i = 0; i < 3; i++)
-    _lastRadarHit[i] = 0.0;
-  */
   pthread_create(&_thread, NULL, SampleThread, (void*)this);
 }
 
@@ -44,28 +39,7 @@ void OdeRadarSensor::sensorReturn(int cval, double xpos, double ypos, double zpo
 	(*i)->AcceptRADAR(cval, xpos, ypos, zpos);
       }
   
-  // convert to heading and distance
-  /*
-  double heading = radunit->getHeadingDegrees();
-  dMatrix3 rpos = radunit->getPosition(); 
-  dP2D origin, rhit;
-  origin.px = rpos[0];
-  origin.py = rpos[1];
-  rhit.px = xpos;
-  rhit.py = ypos;
-  double dist = radunit->distanceBetween(origin,rhit);
-  */
-  /* // version that returns distance and bearing
-  for (i=radar->_readers.begin(); i!=radar->_readers.end(); ++i) {
-    (*i)->AcceptRADAR(cval, dist, heading);
-  */
-  // temporary return version 
-  /*
-  for (i=radar->_readers.begin(); i!=radar->_readers.end(); ++i) {
-    (*i)->AcceptRADAR(cval, xpos, ypos, zpos);
-  }
-  */
-}
+ }
 
 void* OdeRadarSensor::SampleThread(void* args) {
   OdeRadarSensor *radar = (OdeRadarSensor*)args;

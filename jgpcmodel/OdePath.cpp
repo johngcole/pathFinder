@@ -27,17 +27,8 @@ int OdePath::loadWayPointFile(const char* infile, P2D *wp) {
       if (r < MAXWAYPOINTS)
 	r++;
     }
-    //numWaypoints = r;
-    //wpcounter = 0;
     fclose(wpfile);
   }
-  // set destination to first waypoint 
-  /*
-  if (numWaypoints > 0) {
-    destination.px = waypoints[0].px;
-    destination.py = waypoints[0].py;
-  }
-  */
   return r;
 
 };
@@ -94,7 +85,6 @@ void* OdePath::PathThread(void* args) {
       currentpos.py = pos[1];
 
       // check the radar for obstacles
-      //if (path->_pradar->getHitCount() > 0) {
       // counter will always be larger if a new radar hit
       int counter = path->_pradar->getHitCount();
       if (counter > prevCval) {
@@ -159,18 +149,6 @@ void* OdePath::PathThread(void* args) {
       float dhd = (dheading - heading) > 180.0 ? dheading - 360.0 : dheading;
       float hd = (heading - dheading) > 180.0 ? heading - 360.0 : heading;
       pcterror = (dhd - hd) / 360;
-      /*
-      if (dheading < 180 && heading > 180) {
-	pcterror = (dheading + 360 - heading) / 360;
-      } else if (dheading > 180 && heading < 180) {
-	pcterror = (dheading -360 + heading) / 360;
-      } else if (dheading < 180 && heading < 180) {
-	// was divided by 360
-	pcterror = (dheading - heading) / 360;
-      }  else {
-	pcterror = (dheading - heading) / 360;
-      }
-      */
       pcterror *= 2.15; // step up adjust vs steer
       //printf("dheading - heading %f - %f  = %f\n",dheading,heading,pcterror);
       if (pcterror < -0.0139 || pcterror > 0.0139) { //  5degree error 
@@ -184,8 +162,6 @@ void* OdePath::PathThread(void* args) {
       }
 
       // update the waypoint
-      //if (path->_ode->distanceRemaining(currentpos,destination) < 1.0 || 
-      //  currentpos.px > destination.px && !dodging) {
 
       if (path->_ode->distanceRemaining(currentpos,destination) < 1.9  && !dodging) {
 	if (wpcounter < numWaypoints-1) { 
@@ -200,11 +176,6 @@ void* OdePath::PathThread(void* args) {
 	} else { // reached last waypoint wrap around to first one again
 	  // stop
 	  path->_ode->setSpeed(0.0);
-	  /*
-	  wpcounter = 0;
-	  destination.px = waypoints[wpcounter].px;
-	  destination.py = waypoints[wpcounter].py;
-	  */
 	}	  
       } 
       
