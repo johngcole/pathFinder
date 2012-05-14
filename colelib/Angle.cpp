@@ -79,8 +79,9 @@ Angle Angle::abs() const {
 }
 
 NorthBearingAngle Angle::toNorthBearing() const {
-	NorthBearingAngle nba(-_val_rad, Angle::RADIANS);
-	return nba.minus(NorthBearingAngle::EAST);
+	Angle ang = correctFullCircle();
+	NorthBearingAngle nba(-ang.getDoubleValue(Angle::RADIANS), Angle::RADIANS);
+	return nba.plus(NorthBearingAngle::EAST);
 }
 
 bool Angle::operator==(const Angle& other) const {

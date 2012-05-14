@@ -26,13 +26,14 @@ CFLAGS = -Wall -c
 ifeq ($(BUILD_TYPE), debug)
 	CFLAGS += -g
 else
-	CFLAGS += -O2
+	CFLAGS +=
 endif
 DEFINES =  
 LIBS =
 INC =
  
 OBJS = Angle.o
+OBJS += Vector3D.o
 OBJS += Attitude.o
 OBJS += CircularMessageQueue.o
 OBJS += Config.o
@@ -56,6 +57,7 @@ chk_dir :
 	$(CC) $(CFLAGS) $(INC) $(DEFINES) -o $(OUT_DIR)/$(notdir $@) $<
 
 $(OUT_LIB) : $(OBJS)
+	rm -f $(OUT_DIR)/$(OUT_LIB)
 	ar -cq $(OUT_DIR)/$@ $(OBJ_LIST)
 
 clean:

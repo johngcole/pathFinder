@@ -32,8 +32,9 @@ NorthBearingAngle::~NorthBearingAngle() {
 }
 
 Angle NorthBearingAngle::toAngle() const {
-	Angle ang(-_val_rad, Angle::RADIANS);
-	return ang.plus(Angle::RIGHT_ANGLE);
+	NorthBearingAngle nba = correctFullCircle();
+	Angle ang(-nba.getDoubleValue(Angle::RADIANS), Angle::RADIANS);
+	return ang.minus(Angle::RIGHT_ANGLE);
 }
 
 NorthBearingAngle& NorthBearingAngle::operator=(const Angle& other) {
