@@ -17,7 +17,6 @@ endif
 endif
 
 CC = g++
-OUT_DIR = out
 OUT_LIB = libcole.a
 
 BUILD_TYPE = release  # debug or release
@@ -26,46 +25,32 @@ CFLAGS = -Wall -c
 ifeq ($(BUILD_TYPE), debug)
 	CFLAGS += -g
 else
-	CFLAGS +=
+	CFLAGS += -O2
 endif
-DEFINES =  
+DEFINES =
 LIBS =
 INC =
- 
-OBJS = Angle.o
-OBJS += Vector3D.o
-OBJS += Attitude.o
-OBJS += CircularMessageQueue.o
-OBJS += Config.o
-OBJS += Constants.o
-OBJS += Length.o
-OBJS += Logger.o
-OBJS += NorthBearingAngle.o
-OBJS += ParseUtility.o
-OBJS += Stoppable.o
-OBJS += Velocity.o
-OBJS += Velocity3D.o
-OBJ_LIST = $(addprefix $(OUT_DIR)/,$(notdir $(OBJS)))
+
+H_FILES := $(wildcard *.h)
+CPP_FILES := $(wildcard *.cpp)
+O_FILES := $(CPP_FILES:.cpp=.o) 
 
 #####  TARGETS  ###########
-all : chk_dir $(OUT_LIB)
+out : $(OUT_LIB)
 
-chk_dir :
-	if !(test -d $(OUT_DIR)); then mkdir $(OUT_DIR); fi
+%.o: %.cpp $(H_FILES)
+	$(CC) $(CFLAGS) $(INC) $(DEFINES) -o $@ $<
 
-.cpp.o: 
-	$(CC) $(CFLAGS) $(INC) $(DEFINES) -o $(OUT_DIR)/$(notdir $@) $<
-
-$(OUT_LIB) : $(OBJS)
-	rm -f $(OUT_DIR)/$(OUT_LIB)
-	ar -cq $(OUT_DIR)/$@ $(OBJ_LIST)
+$(OUT_LIB) : $(O_FILES)
+	rm -f $(OUT_LIB)
+	ar -cq $@ $(O_FILES)
 
 clean:
-	rm -rf $(OUT_DIR)/*.o $(OUT_DIR)/$(OUT_LIB)
+	rm -rf *.o $(OUT_LIB)
 
 deploy:
-	if !(test -d $(DEPLOY_HDR_DIR)); then mkdir $(DEPLOY_HDR_DIR); fi
-	rm $(DEPLOY_HDR_DIR)/*.h
-	cp $(OUT_DIR)/$(OUT_LIB) $(DEPLOY_LIB_DIR)
-	cp *.h $(DEPLOY_HDR_DIR)
+	@if !(test -d $(DEPLOY_HDR_DIR)); then mkdir $(DEPLOY_HDR_DIR); fi
+	rm -f $(DEPLOY_HDR_DIR)/*.h $(DEPLOY_LIB_DIR)/$(OUT_LIB)
+	cp $(OUT_LIB) $(DEPLOY_LIB_DIR)
+	cp $(H_FILES) $(DEPLOY_HDR_DIR)
 

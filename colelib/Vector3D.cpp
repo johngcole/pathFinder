@@ -43,13 +43,11 @@ bool Vector3D::operator!=(const Vector3D& other) const {
 
 string Vector3D::toString() {
 	ostringstream oss;
-	oss << "[Vector3D: ";
 	oss << _x.getDoubleValue(Length::METERS);
 	oss <<  ",";
 	oss << _y.getDoubleValue(Length::METERS);
 	oss << ",";
 	oss << _z.getDoubleValue(Length::METERS);
-	oss << "]";
 	return oss.str();
 }
 
