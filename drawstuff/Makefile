@@ -1,18 +1,13 @@
 HOST = $(shell hostname)
 
 ifeq ($(HOST), gray-ubnetbook)
-
-DEPLOY_LIB_DIR = /usr/lib
-DEPLOY_HDR_DIR = /usr/include/drawstuff
-
-else 
-ifeq ($(shell hostname), e6500.lgltex.lgl) 
-DEPLOY_LIB_DIR = /usr/lib64
-DEPLOY_HDR_DIR = /usr/include/drawstuff
-
+	DEPLOY_LIB_DIR = /usr/lib
+	DEPLOY_HDR_DIR = /usr/include/drawstuff
+else ifeq ($(shell hostname), e6500.lgltex.lgl) 
+	DEPLOY_LIB_DIR = /usr/lib64
+	DEPLOY_HDR_DIR = /usr/include/drawstuff
 else
-$(error Unknown host: $(HOST))
-endif
+	$(error Unknown host: $(HOST))
 endif
 
 

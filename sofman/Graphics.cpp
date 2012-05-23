@@ -1,26 +1,13 @@
 #include "Graphics.h"
 
-Graphics::Graphics() :
+Graphics::Graphics(Config *config, StatusVariables *status) :
 	Stoppable() {
-
+	_config = config;
+	_status = status;
 }
 Graphics::~Graphics() {
 }
 
-void Graphics::AttachDrawer(Drawer* drawer) {
-	_mutex.lock();
-	_drawers.push_back(drawer);
-	_mutex.unlock();
-}
-
-void Graphics::RemoveDrawer(Drawer* drawer) {
-	_mutex.lock();
-	vector<Drawer*>::iterator it;
-	it = find(_drawers.begin(), _drawers.end(), drawer);
-	if (it != _drawers.end())
-		_drawers.erase(it);
-	_mutex.unlock();
-}
 
 void Graphics::AttachKeyListener(KeyListener* key_list) {
 	_mutex.lock();
@@ -37,14 +24,6 @@ void Graphics::RemoveKeyListener(KeyListener* key_list) {
 	_mutex.unlock();
 }
 
-void Graphics::postDraw() {
-	_mutex.lock();
-	Drawer* d;
-	BOOST_FOREACH( d, _drawers) {
-		d->draw();
-	}
-	_mutex.unlock();
-}
 
 void Graphics::postKeyDown(int key) {
 	_mutex.lock();

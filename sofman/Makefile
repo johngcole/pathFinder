@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -Wall -O2 -c
-OUT_EXE = sofman
+OUT_EXE = _out_
 
 H_FILES := $(wildcard *.h)
 CPP_FILES := $(wildcard *.cpp)
@@ -11,9 +11,9 @@ LIBS = -lcole
 LIBS += -lboost_date_time
 LIBS += -lboost_thread
 
-all : $(OUT_EXE)
+out : $(OUT_EXE)
 
-.cpp.o:
+%.o: %.cpp $(H_FILES)
 	$(CC) $(CFLAGS) $(INC) -o $@ $<
 
 $(OUT_EXE) : $(O_FILES)

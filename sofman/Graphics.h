@@ -5,20 +5,22 @@
 #include <boost/foreach.hpp>
 
 #include <iostream>
+#include <colelib/Config.h>
 #include <colelib/Stoppable.h>
 #include <colelib/Attitude.h>
 #include <colelib/Position3D.h>
 
-#include "Drawer.h"
+#include "StatusVariables.h"
 #include "KeyListener.h"
 
 using namespace cole::thread;
+using namespace cole::util;
 using namespace cole::math::position;
 using namespace std;
 
 class Graphics : public Stoppable {
 public:
-	Graphics();
+	Graphics(Config *config, StatusVariables *status);
 	~Graphics();
 
 	// re-implements Stoppable functions
@@ -26,8 +28,6 @@ public:
 
 	virtual void ChangeCameraView(Position3D &pos, Attitude &att) = 0;
 
-	void AttachDrawer(Drawer *drawer);
-	void RemoveDrawer(Drawer *drawer);
 	void AttachKeyListener(KeyListener *key_listen);
 	void RemoveKeyListener(KeyListener *key_listen);
 
@@ -35,12 +35,12 @@ protected:
 	void postKeyDown(int key);
 	void postKeyUp(int key);
 	void postKeyPress(int key);
-	void postDraw();
+	Config *_config;
+	StatusVariables *_status;
 
 private:
 	boost::mutex _mutex;
 	vector<KeyListener*> _keyListeners;
-	vector<Drawer*> _drawers;
 };
 
 
