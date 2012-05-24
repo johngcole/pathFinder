@@ -4,6 +4,7 @@
 #include <colelib/Config.h>
 #include <colelib/Constants.h>
 #include "StatusVariables.h"
+#include "DrawstuffGraphics.h"
 
 using namespace std;
 using namespace cole::util;
@@ -18,8 +19,10 @@ int main() {
 
 	Config *config = new Config("./config.txt");
 	StatusVariables *status = new StatusVariables();
+	Graphics *graphics = new DrawstuffGraphics(config, status);
 
-
+	graphics->Start();
+	graphics->Join();
 
 	delete status;
 	delete config;

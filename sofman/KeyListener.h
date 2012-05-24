@@ -10,9 +10,20 @@
 
 class KeyListener {
 public:
-	virtual void keyPress(int key) = 0;
-	virtual void keyUp(int key) = 0;
-	virtual void keyDown(int key) = 0;
+
+/*
+	Popular key assignments:
+	Left arrow: -175
+	Right arrow: -173
+	Up arrow: -174
+	Down arrow: -172
+	Escape: -229
+	Enter: -243
+*/
+
+
+	virtual void keyUp(short key) = 0;
+	virtual void keyDown(short key) = 0;
 };
 
 #endif /* __KEYLISTENER_H_ */

@@ -25,7 +25,7 @@ void Graphics::RemoveKeyListener(KeyListener* key_list) {
 }
 
 
-void Graphics::postKeyDown(int key) {
+void Graphics::postKeyDown(short key) {
 	_mutex.lock();
 	KeyListener* l;
 	BOOST_FOREACH( l, _keyListeners) {
@@ -34,7 +34,7 @@ void Graphics::postKeyDown(int key) {
 	_mutex.unlock();
 }
 
-void Graphics::postKeyUp(int key) {
+void Graphics::postKeyUp(short key) {
 	_mutex.lock();
 	KeyListener* l;
 	BOOST_FOREACH( l, _keyListeners) {
@@ -43,13 +43,6 @@ void Graphics::postKeyUp(int key) {
 	_mutex.unlock();
 }
 
-void Graphics::postKeyPress(int key) {
-	_mutex.lock();
-	KeyListener* l;
-	BOOST_FOREACH( l, _keyListeners) {
-		l->keyPress(key);
-	}
-	_mutex.unlock();
-}
+
 
 

@@ -6,15 +6,20 @@ H_FILES := $(wildcard *.h)
 CPP_FILES := $(wildcard *.cpp)
 O_FILES := $(CPP_FILES:.cpp=.o) 
 
+DEFINES = 
 INC = 
 LIBS = -lcole
 LIBS += -lboost_date_time
 LIBS += -lboost_thread
+LIBS += -lX11
+LIBS += -lGL -lGLU
+LIBS += -lglut
+LIBS += -ldstuff
 
 out : $(OUT_EXE)
 
 %.o: %.cpp $(H_FILES)
-	$(CC) $(CFLAGS) $(INC) -o $@ $<
+	$(CC) $(CFLAGS) $(INC) $(DEFINES) -o $@ $<
 
 $(OUT_EXE) : $(O_FILES)
 	$(CC) -o $@ $(O_FILES) $(LIBS)

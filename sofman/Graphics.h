@@ -32,9 +32,8 @@ public:
 	void RemoveKeyListener(KeyListener *key_listen);
 
 protected:
-	void postKeyDown(int key);
-	void postKeyUp(int key);
-	void postKeyPress(int key);
+	void postKeyDown(short key);
+	void postKeyUp(short key);
 	Config *_config;
 	StatusVariables *_status;
 

@@ -3,7 +3,7 @@ HOST = $(shell hostname)
 ifeq ($(HOST), gray-ubnetbook)
 	DEPLOY_LIB_DIR = /usr/lib
 	DEPLOY_HDR_DIR = /usr/include/drawstuff
-else ifeq ($(shell hostname), e6500.lgltex.lgl) 
+else ifeq ($(HOST), e6500.lgltex.lgl) 
 	DEPLOY_LIB_DIR = /usr/lib64
 	DEPLOY_HDR_DIR = /usr/include/drawstuff
 else
@@ -32,10 +32,11 @@ O_FILES := $(CPP_FILES:.cpp=.o)
 #####  TARGETS  ###########
 all : $(OUT_LIB)
 
-.cpp.o: 
+%.o: %.cpp $(H_FILES)
 	$(CC) $(CFLAGS) $(INC) $(DEFINES) -o $@ $<
 
 $(OUT_LIB) : $(O_FILES)
+	rm -f $(OUT_LIB)
 	ar -cq $@ $(O_FILES)
 
 clean:

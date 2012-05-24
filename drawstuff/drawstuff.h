@@ -54,6 +54,14 @@ The user is able to click+drag in the main window to move the camera:
   #define DS_API
 #endif
 
+#ifdef HAVE_APPLE_OPENGL_FRAMEWORK
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -93,6 +101,37 @@ typedef struct dsFunctions {
   const char *path_to_textures;	/* if nonzero, path to texture files */
 } dsFunctions;
 
+
+typedef unsigned char byte;
+
+class Image {
+  int image_width,image_height;
+  byte *image_data;
+public:
+  Image (const char *filename);
+  // load from PPM file
+  ~Image();
+  int width() { return image_width; }
+  int height() { return image_height; }
+  byte *data() { return image_data; }
+};
+
+
+
+class Texture {
+  Image *image;
+  GLuint name;
+public:
+  Texture (const char *filename);
+  ~Texture();
+  void bind (int modulate);
+};
+
+void drawSky (float view_xyz[3]);
+void drawGround();
+void drawPyramidGrid();
+void setCamera (float x, float y, float z, float h, float p, float r);
+void setColor (float r, float g, float b, float alpha);
 
 /**
  * @brief Does the complete simulation.
