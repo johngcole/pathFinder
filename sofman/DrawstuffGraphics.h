@@ -5,7 +5,6 @@
 
 #include <string>
 
-#include <drawstuff/drawstuff.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -14,9 +13,10 @@
 
 #include <colelib/Logger.h>
 #include "Graphics.h"
+#include "DrawstuffHelpers.h"
 
-#define WINDOW_SIZE_WIDTH		640
-#define WINDOW_SIZE_HEIGHT		524
+#define WINDOW_SIZE_WIDTH		420
+#define WINDOW_SIZE_HEIGHT		380
 #define LIGHTX (1.0f)
 #define LIGHTY (0.4f)
 
@@ -35,6 +35,9 @@ private:
 	static void DStuffThread(void *arg);
 	static void _drawGround_();
 	static void _drawSky_(Position3D &camera);
+	static void _setCamera_(Position3D &camera, Attitude &view);
+	static void _drawCar_(Position3D &pos, Attitude &att);
+	static void _setColor_(float r, float g, float b, float alpha);
 	static Texture *SkyText, *GroundText, *WoodText, *CheckeredText;
 
 	boost::mutex _cameraMutex;

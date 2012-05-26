@@ -25,8 +25,10 @@ void DrawstuffGraphics::ChangeCameraView(Position3D &pos, Attitude &att) {
 
 void DrawstuffGraphics::DStuffThread(void *arg) {
 	DrawstuffGraphics *ds = (DrawstuffGraphics*) arg;
-	Position3D cameraPos(Length::ZERO, Length::ZERO, Length::ONE_METER);
-	Attitude cameraView(Angle::ZERO, Angle::ZERO, NorthBearingAngle::NORTH);
+	Position3D pos, cameraPos(Length::ZERO, Length::ZERO, Length::ONE_METER);
+	Vector3D move;
+	Attitude cameraView(Angle::ZERO, Angle::RIGHT_ANGLE.scale(-1),
+			NorthBearingAngle::NORTH);
 
 	// X11 display info
 	Display *display = 0;
@@ -135,10 +137,61 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 				if (event.type == KeyPress) {
 					KeySym key;
 					XLookupString(&event.xkey, NULL, 0, &key, 0);
-					ostringstream oss;
-					oss << "DStuff: KeyPress: ";
-					oss << (short) key;
-					Logger::getInstance()->log(oss.str().c_str());
+					//ostringstream oss;
+					//oss << "DStuff: KeyPress: ";
+					//oss << (short) key;
+					//Logger::getInstance()->log(oss.str().c_str());
+
+					switch ((short) key) {
+					case -175:
+						// left arrow
+						move = Vector3D(Length::ONE_METER.scale(-1),
+								Length::ZERO, Length::ZERO);
+						pos = cameraPos.move(move);
+						Logger::getInstance()->log("DStuff: Move Left");
+						ds->ChangeCameraView(pos, cameraView);
+						break;
+					case -173:
+						// Right arrow: -173
+						move = Vector3D(Length::ONE_METER, Length::ZERO,
+								Length::ZERO);
+						pos = cameraPos.move(move);
+						Logger::getInstance()->log("DStuff: Move Right");
+						ds->ChangeCameraView(pos, cameraView);
+						break;
+					case -174:
+						// Up arrow: -174
+						move = Vector3D(Length::ZERO, Length::ONE_METER,
+								Length::ZERO);
+						pos = cameraPos.move(move);
+						Logger::getInstance()->log("DStuff: Move Up");
+						ds->ChangeCameraView(pos, cameraView);
+						break;
+					case -172:
+						// Down arrow: -172
+						move = Vector3D(Length::ZERO, Length::ONE_METER.scale(
+								-1), Length::ZERO);
+						pos = cameraPos.move(move);
+						Logger::getInstance()->log("DStuff: Move Down");
+						ds->ChangeCameraView(pos, cameraView);
+						break;
+					case 105:
+						// "i" - 105
+						move = Vector3D(Length::ZERO, Length::ZERO,
+								Length::ONE_METER.scale(-1));
+						pos = cameraPos.move(move);
+						Logger::getInstance()->log("DStuff: Zoom In");
+						ds->ChangeCameraView(pos, cameraView);
+						break;
+					case 111:
+						// "o" - 111
+						move = Vector3D(Length::ZERO, Length::ZERO,
+								Length::ONE_METER);
+						pos = cameraPos.move(move);
+						Logger::getInstance()->log("DStuff: Zoom Out");
+						ds->ChangeCameraView(pos, cameraView);
+						break;
+					}
 					ds->postKeyDown((short) key);
 				}
 				if (event.type == KeyRelease) {
@@ -153,24 +206,22 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 			}
 
 			/////////////////////////////////////
-			//dsDrawFrame(width, height, fn, pause && !singlestep);
-
 			// setup stuff
-			glEnable(GL_LIGHTING);
-			glEnable(GL_LIGHT0);
-			glDisable(GL_TEXTURE_2D);
-			glDisable(GL_TEXTURE_GEN_S);
-			glDisable(GL_TEXTURE_GEN_T);
-			glShadeModel(GL_FLAT);
-			glEnable(GL_DEPTH_TEST);
-			glDepthFunc(GL_LESS);
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-			glFrontFace(GL_CCW);
+			glEnable( GL_LIGHTING);
+			glEnable( GL_LIGHT0);
+			glDisable( GL_TEXTURE_2D);
+			glDisable( GL_TEXTURE_GEN_S);
+			glDisable( GL_TEXTURE_GEN_T);
+			glShadeModel( GL_FLAT);
+			glEnable( GL_DEPTH_TEST);
+			glDepthFunc( GL_LESS);
+			glEnable( GL_CULL_FACE);
+			glCullFace( GL_BACK);
+			glFrontFace( GL_CCW);
 
 			// setup viewport
 			glViewport(0, 0, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
-			glMatrixMode(GL_PROJECTION);
+			glMatrixMode( GL_PROJECTION);
 			glLoadIdentity();
 			const float vnear = 0.1f;
 			const float vfar = 100.0f;
@@ -206,14 +257,9 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 			ds->_cameraMutex.unlock();
 
 			// go to GL_MODELVIEW matrix mode and set the camera
-			glMatrixMode(GL_MODELVIEW);
+			glMatrixMode( GL_MODELVIEW);
 			glLoadIdentity();
-			setCamera(cameraPos.getX().getDoubleValue(Length::METERS),
-					cameraPos.getY().getDoubleValue(Length::METERS),
-					cameraPos.getZ().getDoubleValue(Length::METERS),
-					cameraView.getYaw().getDoubleValue(Angle::DEGREES),
-					cameraView.getPitch().getDoubleValue(Angle::DEGREES),
-					cameraView.getRoll().getDoubleValue(Angle::DEGREES));
+			_setCamera_(cameraPos, cameraView);
 
 			// set the light position (for some reason we have to do this in model view.
 			glLightfv(GL_LIGHT0, GL_POSITION, light_position);
@@ -229,12 +275,14 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LESS);
 			glColor3f(1, 1, 1);
-			setColor(1, 1, 1, 1);
+			_setColor_(1, 1, 1, 1);
 
-			// draw the rest of the objects. set drawing state first.
-			//if (fn->step)
-			//	fn->step(pause);
-
+			// draw the rest of the objects (car, path, obstacles)
+			Position3D carPos;
+			Attitude carAtt;
+			ds->_status->getCarPosition(carPos);
+			ds->_status->getCarAttitude(carAtt);
+			_drawCar_(carPos, carAtt);
 			////////////////////////////////////
 
 			glFlush();
@@ -259,15 +307,53 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 	glx_context = 0;
 }
 
+void DrawstuffGraphics::_setCamera_(Position3D &camera, Attitude &view) {
+	float x = camera.getX().getDoubleValue(Length::METERS);
+	float y = camera.getY().getDoubleValue(Length::METERS);
+	float z = camera.getZ().getDoubleValue(Length::METERS);
+	float h = view.getYaw().toAngle().getDoubleValue(Angle::DEGREES);
+	float p = view.getPitch().getDoubleValue(Angle::DEGREES);
+	float r = view.getRoll().getDoubleValue(Angle::DEGREES);
+
+	glMatrixMode ( GL_MODELVIEW);
+	glLoadIdentity();
+	glRotatef(90, 0, 0, 1);
+	glRotatef(90, 0, 1, 0);
+	glRotatef(r, 1, 0, 0);
+	glRotatef(p, 0, 1, 0);
+	glRotatef(-h, 0, 0, 1);
+	glTranslatef(-x, -y, -z);
+}
+
+void DrawstuffGraphics::_setColor_(float r, float g, float b, float alpha) {
+	GLfloat light_ambient[4], light_diffuse[4], light_specular[4];
+	light_ambient[0] = r * 0.3f;
+	light_ambient[1] = g * 0.3f;
+	light_ambient[2] = b * 0.3f;
+	light_ambient[3] = alpha;
+	light_diffuse[0] = r * 0.7f;
+	light_diffuse[1] = g * 0.7f;
+	light_diffuse[2] = b * 0.7f;
+	light_diffuse[3] = alpha;
+	light_specular[0] = r * 0.2f;
+	light_specular[1] = g * 0.2f;
+	light_specular[2] = b * 0.2f;
+	light_specular[3] = alpha;
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, light_ambient);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, light_diffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, light_specular);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 5.0f);
+}
+
 void DrawstuffGraphics::_drawSky_(Position3D &camera) {
-	glDisable(GL_LIGHTING);
-	glEnable(GL_TEXTURE_2D);
+	glDisable( GL_LIGHTING);
+	glEnable( GL_TEXTURE_2D);
 	SkyText->bind(0);
 
 	// make sure sky depth is as far back as possible
-	glShadeModel(GL_FLAT);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
+	glShadeModel( GL_FLAT);
+	glEnable( GL_DEPTH_TEST);
+	glDepthFunc( GL_LEQUAL);
 	glDepthRange(1, 1);
 
 	const float ssize = 1000.0f;
@@ -282,7 +368,7 @@ void DrawstuffGraphics::_drawSky_(Position3D &camera) {
 	float x = ssize * sky_scale;
 	float z = camz + sky_height;
 
-	glBegin(GL_QUADS);
+	glBegin( GL_QUADS);
 	glNormal3f(0, 0, -1);
 	glTexCoord2f(-x + offset, -x + offset);
 	glVertex3f(-ssize + camx, -ssize + camy, z);
@@ -298,17 +384,17 @@ void DrawstuffGraphics::_drawSky_(Position3D &camera) {
 	if (offset > 1)
 		offset -= 1;
 
-	glDepthFunc(GL_LESS);
+	glDepthFunc( GL_LESS);
 	glDepthRange(0, 1);
 }
 
 void DrawstuffGraphics::_drawGround_() {
-	glDisable(GL_LIGHTING);
-	glShadeModel(GL_FLAT);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
+	glDisable( GL_LIGHTING);
+	glShadeModel( GL_FLAT);
+	glEnable( GL_DEPTH_TEST);
+	glDepthFunc( GL_LESS);
 
-	glEnable(GL_TEXTURE_2D);
+	glEnable( GL_TEXTURE_2D);
 	GroundText->bind(0);
 
 	const float gsize = 100.0f;
@@ -317,7 +403,7 @@ void DrawstuffGraphics::_drawGround_() {
 	const float ground_ofsx = 0.5; // offset of ground texture
 	const float ground_ofsy = 0.5;
 
-	glBegin(GL_QUADS);
+	glBegin( GL_QUADS);
 	glNormal3f(0, 0, 1);
 	glTexCoord2f(-gsize * ground_scale + ground_ofsx, -gsize * ground_scale
 			+ ground_ofsy);
@@ -333,8 +419,12 @@ void DrawstuffGraphics::_drawGround_() {
 	glVertex3f(-gsize, gsize, offset);
 	glEnd();
 
-	glDisable(GL_FOG);
+	glDisable( GL_FOG);
 }
 
+void DrawstuffGraphics::_drawCar_(Position3D &pos, Attitude &att) {
+
+
+}
 
 

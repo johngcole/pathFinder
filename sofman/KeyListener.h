@@ -19,6 +19,8 @@ public:
 	Down arrow: -172
 	Escape: -229
 	Enter: -243
+	"i" - 105
+	"o" - 111
 */
 
 

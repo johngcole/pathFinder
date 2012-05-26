@@ -14,7 +14,6 @@ LIBS += -lboost_thread
 LIBS += -lX11
 LIBS += -lGL -lGLU
 LIBS += -lglut
-LIBS += -ldstuff
 
 out : $(OUT_EXE)
 
