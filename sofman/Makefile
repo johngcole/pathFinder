@@ -12,8 +12,8 @@ LIBS = -lcole
 LIBS += -lboost_date_time
 LIBS += -lboost_thread
 LIBS += -lX11
-LIBS += -lGL -lGLU
-LIBS += -lglut
+LIBS += -lGL -lGLU -lglut
+LIBS += -lm
 
 out : $(OUT_EXE)
 

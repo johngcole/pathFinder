@@ -8,9 +8,13 @@ Texture* DrawstuffGraphics::CheckeredText = NULL;
 DrawstuffGraphics::DrawstuffGraphics(Config *config, StatusVariables *status) :
 	Graphics(config, status), _cameraMutex(), _reqCameraPos(Position3D::ZERO),
 			_reqCameraView(Attitude::INVALID_ATT) {
-
+	_car = NULL;
 }
 DrawstuffGraphics::~DrawstuffGraphics() {
+}
+
+void DrawstuffGraphics::AttachODECar(ODECar* car) {
+	_car = car;
 }
 
 void DrawstuffGraphics::Start() {
@@ -205,7 +209,6 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 				}
 			}
 
-			/////////////////////////////////////
 			// setup stuff
 			glEnable( GL_LIGHTING);
 			glEnable( GL_LIGHT0);
@@ -275,14 +278,12 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LESS);
 			glColor3f(1, 1, 1);
-			_setColor_(1, 1, 1, 1);
+			dshSetColor(1, 1, 1, 1);
 
+			/////////////////////////////////////
 			// draw the rest of the objects (car, path, obstacles)
-			Position3D carPos;
-			Attitude carAtt;
-			ds->_status->getCarPosition(carPos);
-			ds->_status->getCarAttitude(carAtt);
-			_drawCar_(carPos, carAtt);
+			if (ds->_car != NULL)
+				_drawCar_(ds->_car);
 			////////////////////////////////////
 
 			glFlush();
@@ -325,25 +326,7 @@ void DrawstuffGraphics::_setCamera_(Position3D &camera, Attitude &view) {
 	glTranslatef(-x, -y, -z);
 }
 
-void DrawstuffGraphics::_setColor_(float r, float g, float b, float alpha) {
-	GLfloat light_ambient[4], light_diffuse[4], light_specular[4];
-	light_ambient[0] = r * 0.3f;
-	light_ambient[1] = g * 0.3f;
-	light_ambient[2] = b * 0.3f;
-	light_ambient[3] = alpha;
-	light_diffuse[0] = r * 0.7f;
-	light_diffuse[1] = g * 0.7f;
-	light_diffuse[2] = b * 0.7f;
-	light_diffuse[3] = alpha;
-	light_specular[0] = r * 0.2f;
-	light_specular[1] = g * 0.2f;
-	light_specular[2] = b * 0.2f;
-	light_specular[3] = alpha;
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, light_ambient);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, light_diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, light_specular);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 5.0f);
-}
+
 
 void DrawstuffGraphics::_drawSky_(Position3D &camera) {
 	glDisable( GL_LIGHTING);
@@ -422,8 +405,7 @@ void DrawstuffGraphics::_drawGround_() {
 	glDisable( GL_FOG);
 }
 
-void DrawstuffGraphics::_drawCar_(Position3D &pos, Attitude &att) {
-
+void DrawstuffGraphics::_drawCar_(ODECar *car) {
 
 }
 

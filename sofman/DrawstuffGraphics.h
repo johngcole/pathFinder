@@ -14,6 +14,7 @@
 #include <colelib/Logger.h>
 #include "Graphics.h"
 #include "DrawstuffHelpers.h"
+#include "ODECar.h"
 
 #define WINDOW_SIZE_WIDTH		420
 #define WINDOW_SIZE_HEIGHT		380
@@ -28,6 +29,7 @@ public:
 	DrawstuffGraphics(Config *config, StatusVariables *status);
 	~DrawstuffGraphics();
 
+	void AttachODECar(ODECar *car);
 	void Start();
 	void ChangeCameraView(Position3D &pos, Attitude &att);
 
@@ -36,13 +38,13 @@ private:
 	static void _drawGround_();
 	static void _drawSky_(Position3D &camera);
 	static void _setCamera_(Position3D &camera, Attitude &view);
-	static void _drawCar_(Position3D &pos, Attitude &att);
-	static void _setColor_(float r, float g, float b, float alpha);
+	static void _drawCar_(ODECar *car);
 	static Texture *SkyText, *GroundText, *WoodText, *CheckeredText;
 
 	boost::mutex _cameraMutex;
 	Position3D _reqCameraPos;
 	Attitude _reqCameraView;
+	ODECar *_car;
 };
 
 
