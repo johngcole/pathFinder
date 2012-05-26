@@ -43,7 +43,13 @@ manage openGL state changes better
 
 #include <ode/ode.h>
 //#include "config.h"
-
+#ifdef HAVE_APPLE_OPENGL_FRAMEWORK
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
 
 #include "drawstuff.h"
 #include "internal.h"
@@ -105,10 +111,24 @@ static void normalizeVector3 (float v[3])
 //***************************************************************************
 // PPM image object
 
+typedef unsigned char byte;
+
+class Image {
+  int image_width,image_height;
+  byte *image_data;
+public:
+  Image (char *filename);
+  // load from PPM file
+  ~Image();
+  int width() { return image_width; }
+  int height() { return image_height; }
+  byte *data() { return image_data; }
+};
+
 
 // skip over whitespace and comments in a stream.
 
-static void skipWhiteSpace (const char *filename, FILE *f)
+static void skipWhiteSpace (char *filename, FILE *f)
 {
   int c,d;
   for(;;) {
@@ -135,7 +155,7 @@ static void skipWhiteSpace (const char *filename, FILE *f)
 // read a number from a stream, this return 0 if there is none (that's okay
 // because 0 is a bad value for all PPM numbers anyway).
 
-static int readNumber (const char *filename, FILE *f)
+static int readNumber (char *filename, FILE *f)
 {
   int c,n=0;
   for(;;) {
@@ -150,7 +170,7 @@ static int readNumber (const char *filename, FILE *f)
 }
 
 
-Image::Image (const char *filename)
+Image::Image (char *filename)
 {
   FILE *f = fopen (filename,"rb");
   if (!f) printf ("Can't open image file `%s'",filename);
@@ -201,7 +221,17 @@ Image::~Image()
 //***************************************************************************
 // Texture object.
 
-Texture::Texture (const char *filename)
+class Texture {
+  Image *image;
+  GLuint name;
+public:
+  Texture (char *filename);
+  ~Texture();
+  void bind (int modulate);
+};
+
+
+Texture::Texture (char *filename)
 {
   image = new Image (filename);
   glGenTextures (1,&name);
@@ -254,7 +284,7 @@ static int tnum = 0;			// current texture number
 //***************************************************************************
 // OpenGL utility stuff
 
-void setCamera (float x, float y, float z, float h, float p, float r)
+static void setCamera (float x, float y, float z, float h, float p, float r)
 {
   glMatrixMode (GL_MODELVIEW);
   glLoadIdentity();
@@ -269,7 +299,7 @@ void setCamera (float x, float y, float z, float h, float p, float r)
 
 // sets the material color, not the light color
 
-void setColor (float r, float g, float b, float alpha)
+static void setColor (float r, float g, float b, float alpha)
 {
   GLfloat light_ambient[4],light_diffuse[4],light_specular[4];
   light_ambient[0] = r*0.3f;
@@ -914,7 +944,7 @@ void dsStopGraphics()
 }
 
 
-void drawSky (float view_xyz[3])
+static void drawSky (float view_xyz[3])
 {
   glDisable (GL_LIGHTING);
   if (use_textures) {
@@ -958,7 +988,7 @@ void drawSky (float view_xyz[3])
 }
 
 
-void drawGround()
+static void drawGround()
 {
   glDisable (GL_LIGHTING);
   glShadeModel (GL_FLAT);
@@ -1010,7 +1040,7 @@ void drawGround()
 }
 
 
-void drawPyramidGrid()
+static void drawPyramidGrid()
 {
   // setup stuff
   glEnable (GL_LIGHTING);
