@@ -25,6 +25,11 @@ void Graphics::RemoveKeyListener(KeyListener* key_list) {
 }
 
 
+void Graphics::AttachODECar(ODECar* car) {
+	_car = car;
+}
+
+
 void Graphics::postKeyDown(short key) {
 	_mutex.lock();
 	KeyListener* l;

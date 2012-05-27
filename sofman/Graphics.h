@@ -12,6 +12,7 @@
 
 #include "StatusVariables.h"
 #include "KeyListener.h"
+#include "ODECar.h"
 
 using namespace cole::thread;
 using namespace cole::util;
@@ -28,6 +29,7 @@ public:
 
 	virtual void ChangeCameraView(Position3D &pos, Attitude &att) = 0;
 
+	void AttachODECar(ODECar *car);
 	void AttachKeyListener(KeyListener *key_listen);
 	void RemoveKeyListener(KeyListener *key_listen);
 
@@ -36,6 +38,7 @@ protected:
 	void postKeyUp(short key);
 	Config *_config;
 	StatusVariables *_status;
+	ODECar *_car;
 
 private:
 	boost::mutex _mutex;

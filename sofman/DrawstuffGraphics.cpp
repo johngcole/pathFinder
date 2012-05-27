@@ -13,10 +13,6 @@ DrawstuffGraphics::DrawstuffGraphics(Config *config, StatusVariables *status) :
 DrawstuffGraphics::~DrawstuffGraphics() {
 }
 
-void DrawstuffGraphics::AttachODECar(ODECar* car) {
-	_car = car;
-}
-
 void DrawstuffGraphics::Start() {
 	startThread(DrawstuffGraphics::DStuffThread, this);
 }
@@ -29,8 +25,9 @@ void DrawstuffGraphics::ChangeCameraView(Position3D &pos, Attitude &att) {
 
 void DrawstuffGraphics::DStuffThread(void *arg) {
 	DrawstuffGraphics *ds = (DrawstuffGraphics*) arg;
-	Position3D pos, cameraPos(Length::ZERO, Length::ZERO, Length::ONE_METER);
+	Position3D pos, cameraPos(Length::ZERO, Length::ZERO, Length::ONE_METER.scale(50));
 	Vector3D move;
+	bool escape = false;
 	Attitude cameraView(Angle::ZERO, Angle::RIGHT_ANGLE.scale(-1),
 			NorthBearingAngle::NORTH);
 
@@ -133,6 +130,8 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 	try {
 		while (true) {
 			boost::this_thread::interruption_point();
+			if (escape)
+				throw boost::thread_interrupted();
 
 			// read in and process all pending events for the main window
 			XEvent event;
@@ -195,16 +194,21 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 						Logger::getInstance()->log("DStuff: Zoom Out");
 						ds->ChangeCameraView(pos, cameraView);
 						break;
+					case -229:
+						// Escape
+						Logger::getInstance()->log("DStuff: Escape...");
+						escape = true;
+						break;
 					}
 					ds->postKeyDown((short) key);
 				}
 				if (event.type == KeyRelease) {
 					KeySym key;
 					XLookupString(&event.xkey, NULL, 0, &key, 0);
-					ostringstream oss;
-					oss << "DStuff: KeyRelease: ";
-					oss << (short) key;
-					Logger::getInstance()->log(oss.str().c_str());
+					//					ostringstream oss;
+					//					oss << "DStuff: KeyRelease: ";
+					//					oss << (short) key;
+					//					Logger::getInstance()->log(oss.str().c_str());
 					ds->postKeyUp((short) key);
 				}
 			}
@@ -326,8 +330,6 @@ void DrawstuffGraphics::_setCamera_(Position3D &camera, Attitude &view) {
 	glTranslatef(-x, -y, -z);
 }
 
-
-
 void DrawstuffGraphics::_drawSky_(Position3D &camera) {
 	glDisable( GL_LIGHTING);
 	glEnable( GL_TEXTURE_2D);
@@ -406,7 +408,35 @@ void DrawstuffGraphics::_drawGround_() {
 }
 
 void DrawstuffGraphics::_drawCar_(ODECar *car) {
+	int i;
+	dVector3 sides;
 
+	dshSetColor(0, 0.65, 0, 1);
+	car->getMainBoxLengths(sides);
+#ifdef dDOUBLE
+	dshDrawBoxD(NULL, car->getMainBoxPos(), car->getMainBoxAttitude(), sides);
+#else
+	dshDrawBox(NULL, car->getMainBoxPos(), car->getMainBoxAttitude(), sides);
+#endif
+
+	dshSetColor(0.25, 0.65, 0.25, 1);
+	car->getSmallBoxLengths(sides);
+#ifdef dDOUBLE
+	dshDrawBoxD(NULL, car->getSmallBoxPos(), car->getSmallBoxAttitude(), sides);
+#else
+	dshDrawBox(NULL, car->getSmallBoxPos(), car->getSmallBoxAttitude(), sides);
+#endif
+
+	// set wheels to black
+	dshSetColor(1, 1, 1, 1);
+	for (i = 0; i < 4; i++) {
+#ifdef dDOUBLE
+		dshDrawCylinderD(WoodText, car->getWheelPos(i),
+				car->getWheelAttitude(i), 0.02f, car->getWheelRadius());
+#else
+		dshDrawCylinder(WoodText, car->getWheelPos(i),
+				car->getWheelAttitude(i), 0.02f, car->getWheelRadius());
+#endif
+	}
 }
-
 
