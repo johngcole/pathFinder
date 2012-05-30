@@ -2,6 +2,7 @@
 #define __GRAPHICS_H_
 
 #include <boost/thread/mutex.hpp>
+#undef Bool
 #include <boost/foreach.hpp>
 
 #include <iostream>
