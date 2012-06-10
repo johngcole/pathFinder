@@ -4,7 +4,9 @@ ODECar::ODECar(Config *config, StatusVariables *status) :
 	Stoppable() {
 	_config = config;
 	_status = status;
+	_cmdSpeed = _cmdSteer = 0.0f;
 	_speed = _steer = 0.0f;
+	_validCmd = false;
 }
 
 ODECar::~ODECar() {
@@ -80,12 +82,14 @@ float ODECar::getCarSteering() {
 }
 void ODECar::setCarSpeed(float speed) {
 	_odeMutex.lock();
-	_speed = speed;
+	_cmdSpeed = MIN( MAX( speed, 0.0f ), 1.0f );
+	_validCmd = true;
 	_odeMutex.unlock();
 }
 void ODECar::setCarSteering(float steer) {
 	_odeMutex.lock();
-	_steer = steer;
+	_cmdSteer = MIN( MAX( steer, -1.0f ), 1.0f );
+	_validCmd = true;
 	_odeMutex.unlock();
 }
 
@@ -97,9 +101,12 @@ void ODECar::ODEThread(void *arg) {
 	ODECar *ode = (ODECar*) arg;
 	int i, bodyI = 0, boxI = 0, jointI = 0, sphI = 0;
 	double x = 0.0, y = 0.0, z = STARTZ;
+	float desiredSpeed, desiredSteer;
 	dMass m;
 
 	ode->_odeMutex.lock();
+	desiredSpeed = ode->_cmdSpeed;
+	desiredSteer = ode->_cmdSteer;
 	dInitODE2(0);
 	ode->_world = dWorldCreate();
 	ode->_space = dHashSpaceCreate(0);
@@ -198,18 +205,32 @@ void ODECar::ODEThread(void *arg) {
 		while (true) {
 			boost::this_thread::interruption_point();
 
-			// catch any speed / steer changes from keyboard
-			float steer = ode->getCarSteering();
-			float speed = ode->getCarSpeed();
-
 			ode->_odeMutex.lock();
+			if (ode->_validCmd) {
+				desiredSpeed = ((int)(ode->_cmdSpeed*1000.0f)) / 1000.f;
+				desiredSteer = ((int)(ode->_cmdSteer*1000.0f)) / 1000.f;
+				ode->_validCmd = false;
+			}
+			if (abs(desiredSpeed-ode->_speed) < 0.00001)
+				desiredSpeed = ode->_speed;
+			if (ode->_speed < desiredSpeed)
+				ode->_speed += 0.001f;
+			if (ode->_speed > desiredSpeed)
+				ode->_speed -= 0.001f;
+			if (abs(desiredSteer-ode->_steer) < 0.00001)
+				desiredSteer = ode->_steer;
+			if (ode->_steer < desiredSteer)
+				ode->_steer += 0.001f;
+			if (ode->_steer > desiredSteer)
+				ode->_steer -= 0.001f;
+
 			//motor
-			dJointSetHinge2Param(ode->_carJoint[0], dParamVel2, -speed);
+			dJointSetHinge2Param(ode->_carJoint[0], dParamVel2, -ode->_speed);
 			dJointSetHinge2Param(ode->_carJoint[0], dParamFMax2, 0.1);
-			dJointSetHinge2Param(ode->_carJoint[1], dParamVel2, -speed);
+			dJointSetHinge2Param(ode->_carJoint[1], dParamVel2, -ode->_speed);
 			dJointSetHinge2Param(ode->_carJoint[1], dParamFMax2, 0.1);
 			//steering
-			dReal v = steer - dJointGetHinge2Angle1(ode->_carJoint[0]);
+			dReal v = ode->_steer - dJointGetHinge2Angle1(ode->_carJoint[0]);
 			if (v > 0.1)
 				v = 0.1;
 			if (v < -0.1)

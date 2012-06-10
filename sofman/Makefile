@@ -6,42 +6,30 @@ CPP_FILES := $(wildcard *.cpp)
 O_FILES := $(CPP_FILES:.cpp=.o) 
 
 HOST = $(shell hostname)
-
-ifeq ($(HOST), gray-ubnetbook)
-CFLAGS = -Wall -O2 -c
-DEFINES = -DdDOUBLE
+CFLAGS = -Wall -c
 ifeq ($(BUILD_TYPE), debug)
-        CFLAGS += -g
+	CFLAGS += -g
 endif
-
-else 
-ifeq ($(shell hostname), e6500.lgltex.lgl) 
-CFLAGS = -Wall -c -v
-CFLAGS += -std=c++0x
-ifeq ($(BUILD_TYPE), debug)
-        CFLAGS += -g
-endif
-
-else
-$(error Unknown host: $(HOST))
-endif
-endif
-
+DEFINES = 
 INC = 
 LIBS = -lcole
 LIBS += -lboost_date_time
-ifeq ($(HOST), gray-ubnetbook)
-LIBS += -lboost_thread
-
-else 
-ifeq ($(shell hostname), e6500.lgltex.lgl) 
-LIBS += -lboost_thread-mt
-endif
-endif
 LIBS += -lX11
 LIBS += -lGL -lGLU -lglut
 LIBS += -lm
 LIBS += -lode
+
+ifeq ($(HOST), gray-ubnetbook)
+	CFLAGS += -O2
+	DEFINES += -DdDOUBLE
+	LIBS += -lboost_thread
+else ifeq ($(shell hostname), e6500.lgltex.lgl) 
+	CFLAGS += -v
+	CFLAGS += -std=c++0x
+	LIBS += -lboost_thread-mt
+else
+$(error Unknown host: $(HOST))
+endif
 
 out : $(OUT_EXE)
 

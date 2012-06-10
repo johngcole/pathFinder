@@ -29,7 +29,6 @@ int main() {
 	graphics->AttachKeyListener(steer);
 	graphics->Start();
 	car->Start();
-	steer->Start();
 
 	boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
 	Logger::getInstance()->log(">>>>> Speed: 0.5");
@@ -38,7 +37,6 @@ int main() {
 	graphics->Join();  // wait on graphics, so user can hit "Escape"
 
 	car->Stop();
-	steer->Stop();
 
 	delete steer;
 	delete car;

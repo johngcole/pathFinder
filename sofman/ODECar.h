@@ -61,6 +61,8 @@ private:
 	dGeomID _carBox[MAXBODYPARTS];
 	dGeomID _carSphere[4];
 	float _steer, _speed;
+	float _cmdSteer, _cmdSpeed;
+	bool _validCmd;
 };
 
 #endif /* __ODECAR_H_ */
