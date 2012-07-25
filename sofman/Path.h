@@ -19,12 +19,12 @@ using namespace cole::math::position;
 /* Path Error
  * Used as a mechanism to return both distance from Path and Bearing from Path
  *
- * DistanceFromPath - negative values indicate areas left of path
- * BearingFromPath - negative values indicate headings left of path's heading
+ * DistanceError - negative values indicate areas left of path
+ * BearingError - negative values indicate headings left of path's heading
  */
 typedef struct path_error_t {
-	Length DistanceFromPath;
-	Angle BearingFromPath;
+	Length DistanceError;
+	Angle BearingError;
 	NorthBearingAngle BearingAtPath;
 } PathError;
 

@@ -37,7 +37,7 @@ Position3D StraightPath::findPosition(Length dist) {
 	return _start.move(_path_bearing, dist);
 }
 
-Position3D StraightPath::findPosition(float percentage) {
+Position3D StraightPath::findPosition(float percentage)  {
 	Length dist = length().scale(percentage);
 	return findPosition(dist);
 }
@@ -91,13 +91,13 @@ void StraightPath::fillPathError(Position3D currPos,
 	}
 
 	// compute distance from path (make it negative if its left of path)
-	error.DistanceFromPath = closestPoint.getRangeTo(currPos);
+	error.DistanceError = closestPoint.getRangeTo(currPos);
 	NorthBearingAngle closestToPos = closestPoint.getBearingTo(currPos);
-	Angle diff = closestToPos.minus(_path_bearing);
+	Angle diff = closestToPos.minus(_path_bearing).correctFullCircle();
 	if (diff > Angle::HALF_CIRCLE)
-		error.DistanceFromPath = error.DistanceFromPath.scale(-1.0);
+		error.DistanceError = error.DistanceError.scale(-1.0);
 
-	error.BearingFromPath = currHeading.minus(_path_bearing).correctHalfCircle();
+	error.BearingError = currHeading.minus(_path_bearing).correctHalfCircle();
 	error.BearingAtPath = _path_bearing;
 }
 
