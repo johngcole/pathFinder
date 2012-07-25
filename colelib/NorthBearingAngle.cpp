@@ -42,6 +42,16 @@ NorthBearingAngle& NorthBearingAngle::operator=(const Angle& other) {
 	return *this;
 }
 
+
+Angle NorthBearingAngle::clockwiseAngleTo(NorthBearingAngle other) {
+	return other.minus(correctFullCircle()).correctFullCircle();
+}
+
+Angle NorthBearingAngle::counterClockwiseAngleTo(NorthBearingAngle other) {
+	return correctFullCircle().minus(other).correctFullCircle();
+}
+
+
 string NorthBearingAngle::toString() {
 	return toString(Angle::DEGREES);
 }

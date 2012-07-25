@@ -35,6 +35,9 @@ public:
 
 	NorthBearingAngle& operator=(const Angle& other);
 
+	Angle clockwiseAngleTo(NorthBearingAngle other);
+	Angle counterClockwiseAngleTo(NorthBearingAngle other);
+
 	string toString();
 	string toString(AngleUnit unit);
 
