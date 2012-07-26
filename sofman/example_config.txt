@@ -1,0 +1,40 @@
+
+PathToTextures = /usr/include/drawstuff/textures
+DrawStuffNumPathVerts = 100
+
+NumPathPieces = 4
+
+Path0_Type = StraightPath
+Path0_StartX = 0
+Path0_StartY = 0
+Path0_StartZ = 0
+Path0_EndX = 20
+Path0_EndY = 0
+Path0_EndZ = 0
+
+Path1_Type = ArcPath
+Path1_StartX = 20
+Path1_StartY = 0
+Path1_StartZ = 0
+Path1_Radius = 15
+Path1_StartBearing = 90
+Path1_ArcLength = 23.561944902
+Path1_Clockwise = false
+
+Path2_Type = ArcPath
+Path2_StartX = 35
+Path2_StartY = 15
+Path2_StartZ = 0
+Path2_Radius = 15
+Path2_StartBearing = 0
+Path2_ArcLength = 23.561944902
+Path2_Clockwise = true
+
+Path3_Type = StraightPath
+Path3_StartX = 50
+Path3_StartY = 30
+Path3_StartZ = 0
+Path3_EndX = 70
+Path3_EndY = 30
+Path3_EndZ = 0
+
