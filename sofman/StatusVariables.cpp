@@ -22,26 +22,31 @@ void StatusVariables::setCarAttitude(Attitude &att) {
 	_carMutex.unlock();
 }
 
-void StatusVariables::getCarPosition(Position3D &pos) {
+Position3D StatusVariables::getCarPosition() {
 	_carMutex.lock();
-	pos = _carPos;
+	Position3D pos = _carPos;
 	_carMutex.unlock();
+	return pos;
 }
-void StatusVariables::getCarAttitude(Attitude &att) {
+Attitude StatusVariables::getCarAttitude() {
 	_carMutex.lock();
-	att = _carAtt;
+	Attitude att = _carAtt;
 	_carMutex.unlock();
+	return att;
 }
 
-void StatusVariables::setPath(Path *path) {
+void StatusVariables::setPath(boost::shared_ptr<Path> path) {
 	_pathMutex.lock();
-	_path.reset(path);
+	_path = path;
 	_pathMutex.unlock();
 }
 
 boost::shared_ptr<Path> StatusVariables::getPath() {
 	_pathMutex.lock();
-	boost::shared_ptr<Path> pathPtr(_path.get());
+	boost::shared_ptr<Path> pathPtr = _path;
 	_pathMutex.unlock();
 	return pathPtr;
 }
+
+
+

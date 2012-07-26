@@ -22,11 +22,11 @@ public:
 	void setCarPosition(Position3D &pos);
 	void setCarAttitude(Attitude &att);
 
-	void getCarPosition(Position3D &pos);
-	void getCarAttitude(Attitude &att);
+	Position3D getCarPosition();
+	Attitude getCarAttitude();
 
 	boost::shared_ptr<Path> getPath();
-	void setPath(Path *path);
+	void setPath(boost::shared_ptr<Path> path);
 
 private:
 	boost::mutex _carMutex;

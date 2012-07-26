@@ -27,7 +27,8 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 	DrawstuffGraphics *ds = (DrawstuffGraphics*) arg;
 	Position3D pos, cameraPos(Length::ZERO, Length::ZERO, Length::ONE_METER.scale(50));
 	Vector3D move;
-	bool escape = false;
+	bool escape = false, follow = false;
+	int numVerts = ds->_config->getValueAsInt("DrawStuffNumPathVerts");
 	Attitude cameraView(Angle::ZERO, Angle::RIGHT_ANGLE.scale(-1),
 			NorthBearingAngle::NORTH);
 
@@ -151,7 +152,8 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 						move = Vector3D(Length::ONE_METER.scale(-1),
 								Length::ZERO, Length::ZERO);
 						pos = cameraPos.move(move);
-						Logger::getInstance()->log("DStuff: Move Left");
+						//Logger::getInstance()->log("DStuff: Move Left");
+						follow = false;
 						ds->ChangeCameraView(pos, cameraView);
 						break;
 					case -173:
@@ -159,7 +161,8 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 						move = Vector3D(Length::ONE_METER, Length::ZERO,
 								Length::ZERO);
 						pos = cameraPos.move(move);
-						Logger::getInstance()->log("DStuff: Move Right");
+						follow = false;
+						//Logger::getInstance()->log("DStuff: Move Right");
 						ds->ChangeCameraView(pos, cameraView);
 						break;
 					case -174:
@@ -167,7 +170,8 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 						move = Vector3D(Length::ZERO, Length::ONE_METER,
 								Length::ZERO);
 						pos = cameraPos.move(move);
-						Logger::getInstance()->log("DStuff: Move Up");
+						follow = false;
+						//Logger::getInstance()->log("DStuff: Move Up");
 						ds->ChangeCameraView(pos, cameraView);
 						break;
 					case -172:
@@ -175,7 +179,7 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 						move = Vector3D(Length::ZERO, Length::ONE_METER.scale(
 								-1), Length::ZERO);
 						pos = cameraPos.move(move);
-						Logger::getInstance()->log("DStuff: Move Down");
+						//Logger::getInstance()->log("DStuff: Move Down");
 						ds->ChangeCameraView(pos, cameraView);
 						break;
 					case 105:
@@ -183,7 +187,7 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 						move = Vector3D(Length::ZERO, Length::ZERO,
 								Length::ONE_METER.scale(-1));
 						pos = cameraPos.move(move);
-						Logger::getInstance()->log("DStuff: Zoom In");
+						//Logger::getInstance()->log("DStuff: Zoom In");
 						ds->ChangeCameraView(pos, cameraView);
 						break;
 					case 111:
@@ -191,8 +195,16 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 						move = Vector3D(Length::ZERO, Length::ZERO,
 								Length::ONE_METER);
 						pos = cameraPos.move(move);
-						Logger::getInstance()->log("DStuff: Zoom Out");
+						//Logger::getInstance()->log("DStuff: Zoom Out");
 						ds->ChangeCameraView(pos, cameraView);
+						break;
+					case 102:
+						// "f" - 102
+						follow = !follow;
+						if (follow)
+							Logger::getInstance()->log("DStuff: Follow enabled");
+						else
+							Logger::getInstance()->log("DStuff: Follow disabled");
 						break;
 					case -229:
 						// Escape
@@ -263,6 +275,14 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 			}
 			ds->_cameraMutex.unlock();
 
+			// if we are in follow mode, move the camera
+			if (follow) {
+				Position3D carPos = ds->_status->getCarPosition();
+				Length currAlt = cameraPos.getZ();
+				Position3D newCam( carPos.getX(), carPos.getY(), currAlt );
+				ds->ChangeCameraView(newCam, cameraView);
+			}
+
 			// go to GL_MODELVIEW matrix mode and set the camera
 			glMatrixMode( GL_MODELVIEW);
 			glLoadIdentity();
@@ -286,8 +306,16 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 
 			/////////////////////////////////////
 			// draw the rest of the objects (car, path, obstacles)
+			//ostringstream oss;
+			//oss << "Car: " << ds->_status->getCarPosition().toString();
+			//Logger::getInstance()->log(oss.str());
+
 			if (ds->_car != NULL)
 				_drawCar_(ds->_car);
+
+			boost::shared_ptr<Path> path = ds->_status->getPath();
+			if (path.get() != NULL)
+				_drawPath_(path.get(), numVerts);
 			////////////////////////////////////
 
 			glFlush();
@@ -382,7 +410,7 @@ void DrawstuffGraphics::_drawGround_() {
 	glEnable( GL_TEXTURE_2D);
 	GroundText->bind(0);
 
-	const float gsize = 100.0f;
+	const float gsize = 1000.0f;
 	const float offset = 0; // -0.001f; ... polygon offsetting doesn't work well
 	const float ground_scale = 1.0f / 1.0f; // ground texture scale (1/size)
 	const float ground_ofsx = 0.5; // offset of ground texture
@@ -440,3 +468,37 @@ void DrawstuffGraphics::_drawCar_(ODECar *car) {
 	}
 }
 
+void DrawstuffGraphics::_drawPath_(Path *path, int numVerts) {
+	Position3D start, end;
+	float per = 0.0f;
+#ifdef dDOUBLE
+	double pos1[3], pos2[3];
+#else
+	float pos1[3], pos2[3];
+#endif
+
+	start = path->findPosition(per);
+
+	while (true) {
+		per += (1.0f / numVerts);
+		if (per-1.0f > 0.000001f)
+			break;
+
+		end = path->findPosition(per);
+
+		pos1[0] = start.getX().getDoubleValue(Length::METERS);
+		pos1[1] = start.getY().getDoubleValue(Length::METERS);
+		pos1[2] = start.getZ().getDoubleValue(Length::METERS) + 0.1;
+		pos2[0] = end.getX().getDoubleValue(Length::METERS);
+		pos2[1] = end.getY().getDoubleValue(Length::METERS);
+		pos2[2] = end.getZ().getDoubleValue(Length::METERS) + 0.1;
+
+#ifdef dDOUBLE
+		dshDrawLineD(CheckeredText, pos1, pos2);
+#else
+		dshDrawLine(CheckeredText, pos1, pos2);
+#endif
+		start = end;
+
+	}
+}

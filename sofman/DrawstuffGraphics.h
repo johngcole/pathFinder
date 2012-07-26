@@ -2,6 +2,7 @@
 #define __DRAWSTUFFGRAPHICS_H_
 
 #include <boost/thread/mutex.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <string>
 
@@ -14,6 +15,7 @@
 #include <colelib/Logger.h>
 #include "Graphics.h"
 #include "DrawstuffHelpers.h"
+#include "Path.h"
 
 #define WINDOW_SIZE_WIDTH		420
 #define WINDOW_SIZE_HEIGHT		380
@@ -37,6 +39,7 @@ private:
 	static void _drawSky_(Position3D &camera);
 	static void _setCamera_(Position3D &camera, Attitude &view);
 	static void _drawCar_(ODECar *car);
+	static void _drawPath_(Path *path, int numVerts);
 	static Texture *SkyText, *GroundText, *WoodText, *CheckeredText;
 
 	boost::mutex _cameraMutex;

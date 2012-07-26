@@ -1,3 +1,5 @@
+#include <boost/shared_ptr.hpp>
+
 #include <iostream>
 
 #include <colelib/Logger.h>
@@ -7,9 +9,15 @@
 #include "DrawstuffGraphics.h"
 #include "ODECar.h"
 #include "ManualSteering.h"
+#include "Path.h"
+#include "CompositePath.h"
+#include "StraightPath.h"
+#include "ArcPath.h"
 
 using namespace std;
 using namespace cole::util;
+
+boost::shared_ptr<Path> readConfigPath(Config *config);
 
 int main() {
 
@@ -21,6 +29,7 @@ int main() {
 
 	Config *config = new Config("./config.txt");
 	StatusVariables *status = new StatusVariables();
+	status->setPath(readConfigPath(config));
 	Graphics *graphics = new DrawstuffGraphics(config, status);
 	ODECar *car = new ODECar(config, status);
 	ManualSteering *steer = new ManualSteering(car);
@@ -43,7 +52,142 @@ int main() {
 	delete graphics;
 	delete status;
 	delete config;
+
     return 1;
 }
 
+boost::shared_ptr<Path> readConfigPath(Config *config) {
+	vector< boost::shared_ptr<Path> > paths;
+	ostringstream oss;
+	Length x, y, z;
+
+	int numPaths = config->getValueAsInt("NumPathPieces");
+	if (numPaths < 0)
+		throw ConfigException("NumPathPieces must be positive!");
+
+	oss.str("");
+	oss << "Reading " << numPaths << " path pieces...";
+	Logger::getInstance()->log(oss.str());
+
+	for (int i=0; i<numPaths; i++) {
+		oss.str("");
+		oss << "Path" << i << "_Type";
+		string type = config->getValue(oss.str());
+		if (type == "ArcPath") {
+			// need to read start location
+			oss.str("");
+			oss << "Path" << i << "_StartX";
+			x = Length(config->getValueAsDouble(oss.str()), Length::METERS );
+			oss.str("");
+			oss << "Path" << i << "_StartY";
+			y = Length(config->getValueAsDouble(oss.str()), Length::METERS );
+			oss.str("");
+			oss << "Path" << i << "_StartZ";
+			z = Length(config->getValueAsDouble(oss.str()), Length::METERS );
+			Position3D start(x, y, z);
+
+			// next, need radius
+			oss.str("");
+			oss << "Path" << i << "_Radius";
+			Length radius( config->getValueAsDouble(oss.str()), Length::METERS );
+
+			// next, need starting bearing
+			oss.str("");
+			oss << "Path" << i << "_StartBearing";
+			NorthBearingAngle startBearing( config->getValueAsDouble(oss.str()), Angle::DEGREES );
+
+			// next, need length of arc
+			oss.str("");
+			oss << "Path" << i << "_ArcLength";
+			Length len( config->getValueAsDouble(oss.str()), Length::METERS );
+
+			// finally, is it clockwise?
+			oss.str("");
+			oss << "Path" << i << "_Clockwise";
+			bool clock = config->getValueAsBool(oss.str());
+
+			boost::shared_ptr<Path> arcpath( new ArcPath(radius, start, startBearing, len, clock) );
+			paths.push_back(arcpath);
+
+		} else if (type == "StraightPath") {
+			// need to read start location
+			oss.str("");
+			oss << "Path" << i << "_StartX";
+			x = Length(config->getValueAsDouble(oss.str()), Length::METERS );
+			oss.str("");
+			oss << "Path" << i << "_StartY";
+			y = Length(config->getValueAsDouble(oss.str()), Length::METERS );
+			oss.str("");
+			oss << "Path" << i << "_StartZ";
+			z = Length(config->getValueAsDouble(oss.str()), Length::METERS );
+			Position3D start(x, y, z);
+
+			// now, end location
+			oss.str("");
+			oss << "Path" << i << "_EndX";
+			x = Length(config->getValueAsDouble(oss.str()), Length::METERS );
+			oss.str("");
+			oss << "Path" << i << "_EndY";
+			y = Length(config->getValueAsDouble(oss.str()), Length::METERS );
+			oss.str("");
+			oss << "Path" << i << "_EndZ";
+			z = Length(config->getValueAsDouble(oss.str()), Length::METERS );
+			Position3D end(x, y, z);
+
+			boost::shared_ptr<Path> strpath( new StraightPath(start, end) );
+			paths.push_back(strpath);
+
+		} else {
+			oss.str("");
+			oss << "ERROR: Unknown Path type: " << type;
+			Logger::getInstance()->log(oss.str());
+		}
+	}
+
+	oss.str("");
+	oss << "Creating composite path with " << paths.size() << " parts...";
+	Logger::getInstance()->log(oss.str());
+
+	boost::shared_ptr<Path> thepath( new CompositePath(paths) );
+	return thepath;
+}
+
+
+/******  PATH TESTING
+	Position3D start(Length(0.0, Length::METERS), Length(0.0, Length::METERS), Length(0.0, Length::METERS));
+	Position3D end(Length(5.0, Length::METERS), Length(5.0, Length::METERS), Length(0.0, Length::METERS));
+	boost::shared_ptr<Path> path1( new StraightPath(start, end) );
+
+	Length radius(5.0, Length::METERS);
+	Length len(15.708, Length::METERS);
+	NorthBearingAngle startBearing(45.0, Angle::DEGREES);
+	boost::shared_ptr<Path> path2( new ArcPath(radius, end, startBearing, len, false) );
+
+	vector< boost::shared_ptr<Path> > paths;
+	paths.push_back(path1);
+	paths.push_back(path2);
+	boost::shared_ptr<Path> path( new CompositePath(paths) );
+
+	cout << "Path start: " << path->start().toString() << endl;
+	cout << "Path end: " << path->end().toString() << endl;
+	cout << "Path Length: " << path->length().toString() << endl;
+	cout << "Path Start Bearing: " << path->startBearing().correctFullCircle().toString() << endl;
+	cout << "Path End Bearing: " << path->endBearing().correctFullCircle().toString() << endl;
+	cout << "Position(.25): " << path->findPosition(.25).toString() << endl;
+	cout << "Position(.5): " << path->findPosition(.5).toString() << endl;
+	cout << "Position(.75): " << path->findPosition(.75).toString() << endl;
+
+	PathError pe;
+	Position3D test(Length(2.0, Length::METERS), Length(2.5, Length::METERS), Length(0.0, Length::METERS));
+	NorthBearingAngle heading(20, Angle::DEGREES);
+	path->fillPathError(test, heading, pe);
+	cout << endl;
+	cout << "Test Point: " << test.toString() << endl;
+	cout << "Test Heading: " << heading.toString() << endl;
+
+	cout << "Path Error:" << endl;
+	cout << "\tDist: " << pe.DistanceError.toString() << endl;
+	cout << "\tBearingAtPath: " << pe.BearingAtPath.toString() << endl;
+	cout << "\tBearingError: " << pe.BearingError.toString() << endl;
+ */
 

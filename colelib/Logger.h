@@ -23,10 +23,10 @@ namespace util {
 class Logger {
 
 public:
-	static void setLoggerFile(string &logFilename);
+	static void setLoggerFile(const string logFilename);
 	static void setLoggerFile(const char* logFilename);
 	static Logger* getInstance();
-	void log(string &msg);
+	void log(const string msg);
 	void log(const char* msg);
 
 private:

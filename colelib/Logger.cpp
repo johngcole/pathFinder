@@ -7,7 +7,7 @@ Logger* Logger::_logger = NULL;
 string Logger::_logFilename = string("");
 bool Logger::_logFileSet = false;
 
-void Logger::setLoggerFile(string &logFilename) {
+void Logger::setLoggerFile(const string logFilename) {
 	Logger::_logFilename = logFilename;
 	Logger::_logFileSet = true;
 }
@@ -21,7 +21,7 @@ Logger* Logger::getInstance() {
 		Logger::_logger = new Logger();
 	return Logger::_logger;
 }
-void Logger::log(string &msg) {
+void Logger::log(const string msg) {
 	_logMutex.lock();
 	boost::posix_time::ptime now =
 			boost::posix_time::second_clock::universal_time();

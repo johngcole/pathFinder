@@ -253,6 +253,16 @@ void ODECar::ODEThread(void *arg) {
 			// remove all contact joints
 			dJointGroupEmpty(ode->_contactgroup);
 
+			// post position to status
+			const dReal* pos = dGeomGetPosition(ode->_carBox[0]);
+			dVector3 sides;
+			dGeomBoxGetLengths(ode->_carBox[0],sides);
+			Length x( pos[0]+(sides[0]/2), Length::METERS );
+			Length y( pos[1]+(sides[1]/2), Length::METERS );
+			Length z( pos[2]+(sides[2]/2), Length::METERS );
+			Position3D position(x,y,z);
+			ode->_status->setCarPosition( position );
+
 			ode->_odeMutex.unlock();
 			boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 		}
