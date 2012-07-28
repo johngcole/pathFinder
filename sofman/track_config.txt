@@ -1,0 +1,151 @@
+
+PathToTextures = /usr/include/drawstuff/textures
+DrawStuffNumPathVerts = 200
+
+NumPathPieces = 17
+
+Path0_Type = StraightPath
+Path0_StartX = 0
+Path0_StartY = 0
+Path0_StartZ = 0
+Path0_EndX = 20
+Path0_EndY = 0
+Path0_EndZ = 0
+
+Path1_Type = ArcPath
+Path1_StartX = 20
+Path1_StartY = 0
+Path1_StartZ = 0
+Path1_Radius = 15
+Path1_StartBearing = 90
+Path1_ArcLength = 23.561944902
+Path1_Clockwise = false
+
+Path2_Type = ArcPath
+Path2_StartX = 35
+Path2_StartY = 15
+Path2_StartZ = 0
+Path2_Radius = 15
+Path2_StartBearing = 0
+Path2_ArcLength = 23.561944902
+Path2_Clockwise = true
+
+Path3_Type = StraightPath
+Path3_StartX = 50
+Path3_StartY = 30
+Path3_StartZ = 0
+Path3_EndX = 70
+Path3_EndY = 30
+Path3_EndZ = 0
+
+Path4_Type = ArcPath
+Path4_StartX = 70
+Path4_StartY = 30
+Path4_StartZ = 0
+Path4_Radius = 15
+Path4_StartBearing = 90
+Path4_ArcLength = 23.561944902
+Path4_Clockwise = true
+
+Path5_Type = StraightPath
+Path5_StartX = 85
+Path5_StartY = 15
+Path5_StartZ = 0
+Path5_EndX = 85
+Path5_EndY = -20
+Path5_EndZ = 0
+
+Path6_Type = ArcPath
+Path6_StartX = 85
+Path6_StartY = -20
+Path6_StartZ = 0
+Path6_Radius = 15
+Path6_StartBearing = 180
+Path6_ArcLength = 23.561944902
+Path6_Clockwise = true
+
+Path7_Type = StraightPath
+Path7_StartX = 70
+Path7_StartY = -35
+Path7_StartZ = 0
+Path7_EndX = 60
+Path7_EndY = -35
+Path7_EndZ = 0
+
+Path8_Type = ArcPath
+Path8_StartX = 60
+Path8_StartY = -35
+Path8_StartZ = 0
+Path8_Radius = 15
+Path8_StartBearing = 270
+Path8_ArcLength = 23.561944902
+Path8_Clockwise = true
+
+Path9_Type = ArcPath
+Path9_StartX = 45
+Path9_StartY = -20
+Path9_StartZ = 0
+Path9_Radius = 15
+Path9_StartBearing = 0
+Path9_ArcLength = 23.561944902
+Path9_Clockwise = false
+
+Path10_Type = ArcPath
+Path10_StartX = 30
+Path10_StartY = -5
+Path10_StartZ = 0
+Path10_Radius = 15
+Path10_StartBearing = 270
+Path10_ArcLength = 23.561944902
+Path10_Clockwise = false
+
+Path11_Type = ArcPath
+Path11_StartX = 15
+Path11_StartY = -20
+Path11_StartZ = 0
+Path11_Radius = 15
+Path11_StartBearing = 180
+Path11_ArcLength = 23.561944902
+Path11_Clockwise = true
+
+Path12_Type = StraightPath
+Path12_StartX = 0
+Path12_StartY = -35
+Path12_StartZ = 0
+Path12_EndX = -15
+Path12_EndY = -30
+Path12_EndZ = 0
+
+Path13_Type = StraightPath
+Path13_StartX = -15
+Path13_StartY = -30
+Path13_StartZ = 0
+Path13_EndX = -20
+Path13_EndY = -30
+Path13_EndZ = 0
+
+Path14_Type = ArcPath
+Path14_StartX = -20
+Path14_StartY = -30
+Path14_StartZ = 0
+Path14_Radius = 15
+Path14_StartBearing = 270
+Path14_ArcLength = 23.561944902
+Path14_Clockwise = true
+
+Path15_Type = ArcPath
+Path15_StartX = -35
+Path15_StartY = -15
+Path15_StartZ = 0
+Path15_Radius = 15
+Path15_StartBearing = 0
+Path15_ArcLength = 23.561944902
+Path15_Clockwise = true
+
+Path16_Type = StraightPath
+Path16_StartX = -20
+Path16_StartY = 0
+Path16_StartZ = 0
+Path16_EndX = 0
+Path16_EndY = 0
+Path16_EndZ = 0

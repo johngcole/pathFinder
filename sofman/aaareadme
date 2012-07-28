@@ -1,0 +1,14 @@
+need to build the colelib stuff first when it is changed
+
+make deploy
+
+then make this dir
+
+q and p turn the car left and right respectively
+
+f causes camera to follow the car
+
+
+a sets speed to slow 0.3
+s sets speed to default 0.5
+d sets speed to fast 0.7

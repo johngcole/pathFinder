@@ -479,6 +479,8 @@ void DrawstuffGraphics::_drawPath_(Path *path, int numVerts) {
 
 	start = path->findPosition(per);
 
+	dshSetColor(1.0, 1.0, 0.0, 1.0);
+
 	while (true) {
 		per += (1.0f / numVerts);
 		if (per-1.0f > 0.000001f)
@@ -496,7 +498,7 @@ void DrawstuffGraphics::_drawPath_(Path *path, int numVerts) {
 #ifdef dDOUBLE
 		dshDrawLineD(CheckeredText, pos1, pos2);
 #else
-		dshDrawLine(CheckeredText, pos1, pos2);
+		dshDrawLine(GroundText, pos1, pos2);
 #endif
 		start = end;
 

@@ -32,6 +32,15 @@ void ManualSteering::keyDown(short key) {
 
 	switch ((unsigned char)(key & 0x00FF))
 	{
+	case 'a': // slow speed
+		_car->setCarSpeed(0.3f);
+		break;
+	case 's': // standard speed
+		_car->setCarSpeed(0.5f);
+		break;
+	case 'd': // fast speed
+		_car->setCarSpeed(0.7f);
+		break;
 	case 'q':
 		_car->setCarSteering(-1.0f);
 		break;
