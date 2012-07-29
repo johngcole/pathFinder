@@ -103,6 +103,7 @@ void ODECar::ODEThread(void *arg) {
 	double x = 0.0, y = 0.0, z = STARTZ;
 	float desiredSpeed, desiredSteer;
 	dMass m;
+	PathError pe;
 
 	ode->_odeMutex.lock();
 	desiredSpeed = ode->_cmdSpeed;
@@ -261,7 +262,19 @@ void ODECar::ODEThread(void *arg) {
 			Length y( pos[1]+(sides[1]/2), Length::METERS );
 			Length z( pos[2]+(sides[2]/2), Length::METERS );
 			Position3D position(x,y,z);
+			// get the old position first to allow update to distance traveled
+			Position3D oldpos = ode->_status->getCarPosition();
 			ode->_status->setCarPosition( position );
+			// update the path error in status
+			ode->_status->getPath()->fillPathError(position,
+			    NorthBearingAngle(0.0,NorthBearingAngle::DEGREES), pe);
+			double cx,cy,px,py;
+			cx = position.getX().getDoubleValue(Length::METERS);
+			cy = position.getY().getDoubleValue(Length::METERS);
+			px = oldpos.getX().getDoubleValue(Length::METERS);
+			py = oldpos.getY().getDoubleValue(Length::METERS);
+			ode->_status->updateStats(pe.DistanceError.getDoubleValue(Length::METERS),
+						  sqrt(pow((px-cx),2) + pow((py-cy),2)));
 
 			ode->_odeMutex.unlock();
 			boost::this_thread::sleep(boost::posix_time::milliseconds(1));

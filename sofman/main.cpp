@@ -43,9 +43,25 @@ int main() {
 	Logger::getInstance()->log(">>>>> Speed: 0.5");
 	car->setCarSpeed(0.5f);
 
+	//boost::posix_time::ptime t1 = boost::posix_time::second_clock::local_time();
+	status->setStartTime(boost::posix_time::second_clock::local_time());
+
 	graphics->Join();  // wait on graphics, so user can hit "Escape"
 
 	car->Stop();
+	boost::posix_time::ptime t2 = boost::posix_time::second_clock::local_time();
+	boost::posix_time::time_duration diff = t2 - status->getStartTime();
+	std::cout << "*** Trip Statistics ****"  << std::endl;
+	printf("elapsed time %i total error %10.2f total distance %8.2f\n",
+	       diff.total_seconds(),sqrt(status->getErrorValue()),
+	       status->getDistanceTraveled());
+	Logger::getInstance()->log("*** Trip Statistics ****");
+	char out[70];
+	sprintf(out,"elapsed time %i total error %10.2f total distance %8.2f",
+	       diff.total_seconds(),sqrt(status->getErrorValue()),
+	       status->getDistanceTraveled());
+	Logger::getInstance()->log(out);
+	//std::cout << diff.total_milliseconds() << std::endl;
 
 	delete steer;
 	delete car;

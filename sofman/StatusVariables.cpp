@@ -7,6 +7,8 @@ _carAtt(Attitude::INVALID_ATT),
 _pathMutex()
 {
 	_path.reset();
+	sumErrorSquares = 0.0;
+	sumDistanceTraveled = 0.0;
 }
 StatusVariables::~StatusVariables() {
 }
@@ -23,8 +25,7 @@ void StatusVariables::setCarAttitude(Attitude &att) {
 }
 
 Position3D StatusVariables::getCarPosition() {
-	_carMutex.lock();
-	Position3D pos = _carPos;
+	_carMutex.lock();	Position3D pos = _carPos;
 	_carMutex.unlock();
 	return pos;
 }
@@ -40,6 +41,20 @@ void StatusVariables::setPath(boost::shared_ptr<Path> path) {
 	_path = path;
 	_pathMutex.unlock();
 }
+
+void StatusVariables::updateStats(double errv, double dist) {
+  sumErrorSquares += pow(errv,2);
+  sumDistanceTraveled += dist;
+}
+
+
+void StatusVariables::setStartTime(boost::posix_time::ptime tval) {
+  startTime = tval;
+}
+
+boost::posix_time::ptime StatusVariables::getStartTime() { return startTime;}
+double StatusVariables::getErrorValue() {return sumErrorSquares;}
+double StatusVariables::getDistanceTraveled() { return sumDistanceTraveled;}
 
 boost::shared_ptr<Path> StatusVariables::getPath() {
 	_pathMutex.lock();

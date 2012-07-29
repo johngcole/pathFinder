@@ -28,6 +28,14 @@ public:
 	boost::shared_ptr<Path> getPath();
 	void setPath(boost::shared_ptr<Path> path);
 
+	double getErrorValue();
+	double getDistanceTraveled();
+
+	void updateStats(double errv, double dist);
+
+	boost::posix_time::ptime getStartTime();
+	void setStartTime(boost::posix_time::ptime tval);
+
 private:
 	boost::mutex _carMutex;
 	Position3D _carPos;
@@ -35,6 +43,11 @@ private:
 
 	boost::mutex _pathMutex;
 	boost::shared_ptr<Path> _path;
+	
+	boost::posix_time::ptime startTime;
+	double sumErrorSquares; 
+	double sumDistanceTraveled;
+
 };
 
 
