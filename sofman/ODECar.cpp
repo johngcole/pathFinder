@@ -268,6 +268,7 @@ void ODECar::ODEThread(void *arg) {
 			// update the path error in status
 			ode->_status->getPath()->fillPathError(position,
 			    NorthBearingAngle(0.0,NorthBearingAngle::DEGREES), pe);
+			//printf("distance error %20.1f\n",pe.DistanceError.getDoubleValue(Length::METERS));
 			double cx,cy,px,py;
 			cx = position.getX().getDoubleValue(Length::METERS);
 			cy = position.getY().getDoubleValue(Length::METERS);
