@@ -52,14 +52,25 @@ int main() {
 	boost::posix_time::ptime t2 = boost::posix_time::second_clock::local_time();
 	boost::posix_time::time_duration diff = t2 - status->getStartTime();
 	std::cout << "*** Trip Statistics ****"  << std::endl;
-	printf("elapsed secs %i total error %10.2f total distance %8.2f path length %5.2f\n",
-	       diff.total_seconds(),sqrt(status->getErrorValue())-1410.0,
+    
+	printf("elapsed secs %i; error %7.2f; total distance %8.2f path length %5.2f\n",
+	       diff.total_seconds(),sqrt(status->getErrorValue())-1305.8,
 	       status->getDistanceTraveled(),status->getPath()->length().getDoubleValue(Length::METERS));
+	printf("meas. cnt %i; error / cnt %6.4f; actual 2 std distance %3.2f actual 2 std time %3.2f\n",
+	       status->getMeasurementCount()-4394,
+	       (sqrt(status->getErrorValue())-1305.8)/(status->getMeasurementCount()-4394),
+	       status->getDistanceTraveled() / status->getPath()->length().getDoubleValue(Length::METERS),
+	       (float) diff.total_seconds() / 21.5);
 	Logger::getInstance()->log("*** Trip Statistics ****");
 	char out[70];
 	sprintf(out,"elapsed time %i total error %10.2f total distance %8.2f path length %5.2f",
-	       diff.total_seconds(),sqrt(status->getErrorValue())-1410.0,
+	       diff.total_seconds(),sqrt(status->getErrorValue())-1305.8,
 	       status->getDistanceTraveled(),status->getPath()->length().getDoubleValue(Length::METERS));
+	sprintf(out,"meas. cnt %i; error / cnt %6.4f; actual 2 std dist %3.2f actual 2 std time %3.2f\n",
+	       status->getMeasurementCount()-4394,
+	       (sqrt(status->getErrorValue())-1305.8)/(status->getMeasurementCount()-4394),
+	       status->getDistanceTraveled() / status->getPath()->length().getDoubleValue(Length::METERS),
+	       (float) diff.total_seconds() / 21.5);
 	Logger::getInstance()->log(out);
 	//std::cout << diff.total_milliseconds() << std::endl;
 

@@ -30,6 +30,7 @@ public:
 
 	double getErrorValue();
 	double getDistanceTraveled();
+	int getMeasurementCount();
 
 	void updateStats(double errv, double dist);
 
@@ -47,6 +48,7 @@ private:
 	boost::posix_time::ptime startTime;
 	double sumErrorSquares; 
 	double sumDistanceTraveled;
+	int errorMeasureCount;
 
 };
 

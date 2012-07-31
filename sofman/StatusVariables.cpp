@@ -9,6 +9,7 @@ _pathMutex()
 	_path.reset();
 	sumErrorSquares = 0.0;
 	sumDistanceTraveled = 0.0;
+	errorMeasureCount = 0;
 }
 StatusVariables::~StatusVariables() {
 }
@@ -45,6 +46,7 @@ void StatusVariables::setPath(boost::shared_ptr<Path> path) {
 void StatusVariables::updateStats(double errv, double dist) {
   sumErrorSquares += pow(errv,2);
   sumDistanceTraveled += dist;
+  errorMeasureCount++;
 }
 
 
@@ -55,6 +57,7 @@ void StatusVariables::setStartTime(boost::posix_time::ptime tval) {
 boost::posix_time::ptime StatusVariables::getStartTime() { return startTime;}
 double StatusVariables::getErrorValue() {return sumErrorSquares;}
 double StatusVariables::getDistanceTraveled() { return sumDistanceTraveled;}
+int StatusVariables::getMeasurementCount() { return errorMeasureCount;}
 
 boost::shared_ptr<Path> StatusVariables::getPath() {
 	_pathMutex.lock();
