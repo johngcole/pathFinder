@@ -53,17 +53,18 @@ int main() {
 
 	Logger::getInstance()->log("*** Trip Statistics ****");
 	char out[270];
+	double stdrate = status->getPath()->length().getDoubleValue(Length::METERS) / 4.052;
 	sprintf(out,"elapsed time %i total error %10.2f total distance %8.2f path length %5.2f",
 	       diff.total_seconds(),
 	       sqrt(status->getErrorValue()),
 	       status->getDistanceTraveled(),
 	       status->getPath()->length().getDoubleValue(Length::METERS));
 	Logger::getInstance()->log(out);
-	sprintf(out,"meas. cnt %i; error / cnt %6.4f; actual 2 std dist %3.2f actual 2 std time %3.2f\n",
+	sprintf(out,"meas. cnt %i; std err %6.4f; actual 2 std dist %3.2f actual 2 std time %3.2f\n",
 	       status->getMeasurementCount(),
-	       (sqrt(status->getErrorValue()))/(status->getMeasurementCount()),
+	       (sqrt(status->getErrorValue()))/sqrt(status->getMeasurementCount()),
 	       status->getDistanceTraveled() / status->getPath()->length().getDoubleValue(Length::METERS),
-	       (float) diff.total_seconds() / 21.5);
+	       (float) diff.total_seconds() / stdrate);
 	Logger::getInstance()->log(out);
 
 	delete steer;
