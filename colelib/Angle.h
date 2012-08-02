@@ -41,6 +41,9 @@ public:
 	Angle correctFullCircle() const;
 	Angle correctHalfCircle() const;
 
+	Angle clockwiseAngleTo(const Angle& other);
+	Angle counterClockwiseAngleTo(const Angle& other);
+
 	NorthBearingAngle toNorthBearing() const;
 
 	Angle& operator=(const Angle& other);

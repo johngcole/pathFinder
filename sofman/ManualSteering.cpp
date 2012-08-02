@@ -30,16 +30,25 @@ void ManualSteering::keyDown(short key) {
 	if (key<0)
 		return;
 
-	switch ((unsigned char)(key & 0x00FF))
+	ostringstream oss;
+	float speed;
+	unsigned char k = (unsigned char)(key & 0x00FF);
+	switch (k)
 	{
-	case 'a': // slow speed
-		_car->setCarSpeed(0.3f);
-		break;
-	case 's': // standard speed
-		_car->setCarSpeed(0.5f);
-		break;
-	case 'd': // fast speed
-		_car->setCarSpeed(0.7f);
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	case '0':
+		speed = (float)(k - '0') / 10.0f;
+		oss << ">>> Speed -> " << speed;
+		Logger::getInstance()->log(oss.str().c_str());
+		_car->setCarSpeed(speed);
 		break;
 	case 'q':
 		_car->setCarSteering(-1.0f);

@@ -5,10 +5,10 @@ ArcPath::ArcPath(Position3D center, Length radius, NorthBearingAngle start,
 
 	_center = center;
 	_radius = radius;
-	_arc_start = start;
-	_arc_end = end;
+	_arc_start = start.correctFullCircle();
+	_arc_end = end.correctFullCircle();
 	_clockwise = clockwise;
-	_arc_len = (clockwise ? _arc_start.clockwiseAngleTo(_arc_end)
+	_arc_width = (clockwise ? _arc_start.clockwiseAngleTo(_arc_end)
 			: _arc_start.counterClockwiseAngleTo(_arc_end));
 }
 
@@ -20,19 +20,19 @@ ArcPath::ArcPath(Length radius, Position3D startLocation,
 	NorthBearingAngle toCenter = (_clockwise ? startBearing.plus(
 			Angle::RIGHT_ANGLE) : startBearing.minus(Angle::RIGHT_ANGLE));
 	_center = startLocation.move(toCenter, _radius);
-	_arc_start = _center.getBearingTo(startLocation);
+	_arc_start = _center.getBearingTo(startLocation).correctFullCircle();
 
 	double percent = 2 * Constants::PI * radius.getDoubleValue(Length::METERS);
 	percent /= length.getDoubleValue(Length::METERS);
-	_arc_len = Angle::FULL_CIRCLE.scale(1.0 / percent);
-	_arc_end = (_clockwise ? _arc_start.plus(_arc_len) : _arc_start.minus(
-			_arc_len));
+	_arc_width = Angle::FULL_CIRCLE.scale(1.0 / percent);
+	_arc_end = (_clockwise ? _arc_start.plus(_arc_width) : _arc_start.minus(
+			_arc_width)).correctFullCircle();
 }
 
 Length ArcPath::length() {
 	double circum = ((Constants::PI * 2.0) * _radius.getDoubleValue(
 			Length::METERS));
-	double arcPer = (_arc_len.getDoubleValue(Angle::RADIANS) / (Constants::PI
+	double arcPer = (_arc_width.getDoubleValue(Angle::RADIANS) / (Constants::PI
 			* 2.0));
 	return Length(circum * arcPer, Length::METERS);
 }
@@ -53,11 +53,17 @@ NorthBearingAngle ArcPath::endBearing() {
 
 bool ArcPath::isBearingWithinArcPath(NorthBearingAngle bearing) {
 	bearing = bearing.correctFullCircle();
+
+	Angle startToEnd, startToBearing;
 	if (_clockwise) {
-		return (bearing >= _arc_start) && (bearing <= _arc_end);
+		startToEnd = _arc_start.clockwiseAngleTo(_arc_end);
+		startToBearing = _arc_start.clockwiseAngleTo(bearing);
 	} else {
-		return (bearing <= _arc_start) && (bearing >= _arc_end);
+		startToEnd = _arc_start.counterClockwiseAngleTo(_arc_end);
+		startToBearing = _arc_start.counterClockwiseAngleTo(bearing);
 	}
+
+	return (startToEnd >= startToBearing);
 }
 
 Position3D ArcPath::findPosition(float percentage) {
@@ -88,20 +94,21 @@ void ArcPath::fillPathError(Position3D currPos, NorthBearingAngle currHeading,
 	// first, we need to find the closest point on the arc to this given currPos
 	Position3D closestPoint;
 	NorthBearingAngle toPos = _center.getBearingTo(currPos);
-	//System.out.println("Angle from center to point -> "+toPos.toString(Angle.DEGREES));
+
 	if (isBearingWithinArcPath(toPos)) {
 		// currPos bearing is within our arc, so we just pick that bearing's point on arc
 		closestPoint = _center.move(toPos, _radius);
 	} else {
 		// currPos bearing is outside our arc, so we either pick end or start as closest point
-		Length toStart = start().getRangeTo(currPos);
-		Length toEnd = end().getRangeTo(currPos);
+
+		Length toStart = start().getGroundRangeTo(currPos);
+		Length toEnd = end().getGroundRangeTo(currPos);
 		if (toStart <= toEnd)
 			closestPoint = start();
 		else
 			closestPoint = end();
 	}
-	err.DistanceError = closestPoint.getRangeTo(currPos);
+	err.DistanceError = closestPoint.getGroundRangeTo(currPos);
 
 	NorthBearingAngle toClosest = _center.getBearingTo(closestPoint);
 	err.BearingAtPath = (_clockwise ? toClosest.plus(Angle::RIGHT_ANGLE)

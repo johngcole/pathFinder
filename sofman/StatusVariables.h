@@ -13,6 +13,7 @@
 
 using namespace std;
 using namespace cole::math::position;
+using namespace boost::posix_time;
 
 class StatusVariables {
 public:
@@ -33,9 +34,8 @@ public:
 	int getMeasurementCount();
 
 	void updateStats(double errv, double dist);
-
-	boost::posix_time::ptime getStartTime();
-	void setStartTime(boost::posix_time::ptime tval);
+	ptime getStartTime();
+	void startStats();
 
 private:
 	boost::mutex _carMutex;
@@ -45,10 +45,11 @@ private:
 	boost::mutex _pathMutex;
 	boost::shared_ptr<Path> _path;
 	
-	boost::posix_time::ptime startTime;
-	double sumErrorSquares; 
-	double sumDistanceTraveled;
-	int errorMeasureCount;
+	boost::mutex _statsMutex;
+	ptime _startTime;
+	double _sumErrorSquares;
+	double _sumDistanceTraveled;
+	int _errorMeasureCount;
 
 };
 

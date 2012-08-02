@@ -33,7 +33,7 @@ private:
     Length _radius;
     NorthBearingAngle _arc_start, _arc_end;
     bool _clockwise;
-    Angle _arc_len;
+    Angle _arc_width;
 };
 
 
