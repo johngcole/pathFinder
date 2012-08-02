@@ -84,6 +84,16 @@ NorthBearingAngle Angle::toNorthBearing() const {
 	return nba.plus(NorthBearingAngle::EAST);
 }
 
+
+Angle Angle::clockwiseAngleTo(const Angle& other) {
+	Angle ang = minus(other);
+	return ang.correctFullCircle();
+}
+Angle Angle::counterClockwiseAngleTo(const Angle& other) {
+	Angle ang = other.minus(correctFullCircle());
+	return ang.correctFullCircle();
+}
+
 bool Angle::operator==(const Angle& other) const {
 	return (_val_rad == other._val_rad);
 }

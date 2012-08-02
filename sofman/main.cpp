@@ -21,7 +21,9 @@ boost::shared_ptr<Path> readConfigPath(Config *config);
 
 int main() {
 
-	Logger::setLoggerFile("./log.txt");
+	// uncomment next line to use logfile, otherwise will use stdout
+	//Logger::setLoggerFile("./log.txt");
+
 	Logger::getInstance()->log("");
 	Logger::getInstance()->log("");
 	Logger::getInstance()->log("    sofman cometh...  ");
@@ -39,40 +41,30 @@ int main() {
 	graphics->Start();
 	car->Start();
 
-	boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
-	Logger::getInstance()->log(">>>>> Speed: 0.5");
-	car->setCarSpeed(0.5f);
-
-	//boost::posix_time::ptime t1 = boost::posix_time::second_clock::local_time();
-	status->setStartTime(boost::posix_time::second_clock::local_time());
+	Logger::getInstance()->log("Starting statistics...");
+	status->startStats();
 
 	graphics->Join();  // wait on graphics, so user can hit "Escape"
 
 	car->Stop();
-	boost::posix_time::ptime t2 = boost::posix_time::second_clock::local_time();
+
+	boost::posix_time::ptime t2 = boost::posix_time::microsec_clock::local_time();
 	boost::posix_time::time_duration diff = t2 - status->getStartTime();
-	std::cout << "*** Trip Statistics ****"  << std::endl;
-    
-	printf("elapsed secs %i; error %7.2f; total distance %8.2f path length %5.2f\n",
-	       diff.total_seconds(),sqrt(status->getErrorValue())-1305.8,
-	       status->getDistanceTraveled(),status->getPath()->length().getDoubleValue(Length::METERS));
-	printf("meas. cnt %i; error / cnt %6.4f; actual 2 std distance %3.2f actual 2 std time %3.2f\n",
-	       status->getMeasurementCount()-4394,
-	       (sqrt(status->getErrorValue())-1305.8)/(status->getMeasurementCount()-4394),
-	       status->getDistanceTraveled() / status->getPath()->length().getDoubleValue(Length::METERS),
-	       (float) diff.total_seconds() / 21.5);
+
 	Logger::getInstance()->log("*** Trip Statistics ****");
-	char out[70];
+	char out[270];
 	sprintf(out,"elapsed time %i total error %10.2f total distance %8.2f path length %5.2f",
-	       diff.total_seconds(),sqrt(status->getErrorValue())-1305.8,
-	       status->getDistanceTraveled(),status->getPath()->length().getDoubleValue(Length::METERS));
+	       diff.total_seconds(),
+	       sqrt(status->getErrorValue()),
+	       status->getDistanceTraveled(),
+	       status->getPath()->length().getDoubleValue(Length::METERS));
+	Logger::getInstance()->log(out);
 	sprintf(out,"meas. cnt %i; error / cnt %6.4f; actual 2 std dist %3.2f actual 2 std time %3.2f\n",
-	       status->getMeasurementCount()-4394,
-	       (sqrt(status->getErrorValue())-1305.8)/(status->getMeasurementCount()-4394),
+	       status->getMeasurementCount(),
+	       (sqrt(status->getErrorValue()))/(status->getMeasurementCount()),
 	       status->getDistanceTraveled() / status->getPath()->length().getDoubleValue(Length::METERS),
 	       (float) diff.total_seconds() / 21.5);
 	Logger::getInstance()->log(out);
-	//std::cout << diff.total_milliseconds() << std::endl;
 
 	delete steer;
 	delete car;

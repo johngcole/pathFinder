@@ -70,10 +70,12 @@ void CompositePath::fillPathError(Position3D currPos,
 	PathError bestFit, curr;
 	bestFit.DistanceError = Length(DBL_MAX, Length::METERS);
 	boost::shared_ptr<Path> path;
-	BOOST_FOREACH(path, _paths) {
+	for (int i=0; i<(int)_paths.size(); i++) {
+		path = _paths[i];
 		path->fillPathError(currPos, currHeading, curr);
-		if (curr.DistanceError.abs() < bestFit.DistanceError.abs())
+		if (curr.DistanceError.abs() < bestFit.DistanceError.abs()) {
 			memcpy(&bestFit, &curr, sizeof(PathError));
+		}
 	}
 	memcpy(&error, &bestFit, sizeof(PathError));
 }

@@ -27,6 +27,9 @@ public:
     virtual Position3D findPosition(float percentage);
 
 private:
+    bool insideStraightPath(Position3D pos);
+    bool isLeft( Position3D a, Position3D b, Position3D c );
+
 	Position3D _start, _end;
 	NorthBearingAngle _path_bearing;
 };

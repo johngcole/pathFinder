@@ -8,7 +8,4 @@ q and p turn the car left and right respectively
 
 f causes camera to follow the car
 
-
-a sets speed to slow 0.3
-s sets speed to default 0.5
-d sets speed to fast 0.7
+'0' through '9' sets the car speed to 0.0 through 0.9

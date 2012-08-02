@@ -258,24 +258,23 @@ void ODECar::ODEThread(void *arg) {
 			const dReal* pos = dGeomGetPosition(ode->_carBox[0]);
 			dVector3 sides;
 			dGeomBoxGetLengths(ode->_carBox[0],sides);
-			Length x( pos[0]+(sides[0]/2), Length::METERS );
-			Length y( pos[1]+(sides[1]/2), Length::METERS );
-			Length z( pos[2]+(sides[2]/2), Length::METERS );
+			Length x( pos[0], Length::METERS );
+			Length y( pos[1], Length::METERS );
+			Length z( pos[2], Length::METERS );
 			Position3D position(x,y,z);
+			//Logger::getInstance()->log("Position: " + position.toString());
+
 			// get the old position first to allow update to distance traveled
 			Position3D oldpos = ode->_status->getCarPosition();
 			ode->_status->setCarPosition( position );
+
 			// update the path error in status
 			ode->_status->getPath()->fillPathError(position,
 			    NorthBearingAngle(0.0,NorthBearingAngle::DEGREES), pe);
-			//printf("distance error %20.1f\n",pe.DistanceError.getDoubleValue(Length::METERS));
-			double cx,cy,px,py;
-			cx = position.getX().getDoubleValue(Length::METERS);
-			cy = position.getY().getDoubleValue(Length::METERS);
-			px = oldpos.getX().getDoubleValue(Length::METERS);
-			py = oldpos.getY().getDoubleValue(Length::METERS);
+
+			//Logger::getInstance()->log("Path Dist Error: " + pe.DistanceError.toString());
 			ode->_status->updateStats(pe.DistanceError.getDoubleValue(Length::METERS),
-						  sqrt(pow((px-cx),2) + pow((py-cy),2)));
+						  position.getGroundRangeTo(oldpos).getDoubleValue(Length::METERS));
 
 			ode->_odeMutex.unlock();
 			boost::this_thread::sleep(boost::posix_time::milliseconds(1));
