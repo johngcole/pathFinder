@@ -271,8 +271,8 @@ void ODECar::ODEThread(void *arg) {
 			// update the path error in status
 			ode->_status->getPath()->fillPathError(position,
 			    NorthBearingAngle(0.0,NorthBearingAngle::DEGREES), pe);
-			ode->_status->updateStats(pe.DistanceError.getDoubleValue(Length::METERS),
-						  position.getGroundRangeTo(oldpos).getDoubleValue(Length::METERS));
+			ode->_status->updateStats(pe.DistanceError,
+						  position.getGroundRangeTo(oldpos));
 
 			ode->_odeMutex.unlock();
 			boost::this_thread::sleep(boost::posix_time::milliseconds(1));

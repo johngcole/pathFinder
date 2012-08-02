@@ -29,11 +29,12 @@ public:
 	boost::shared_ptr<Path> getPath();
 	void setPath(boost::shared_ptr<Path> path);
 
-	double getErrorValue();
-	double getDistanceTraveled();
+	Length getErrorValue();
+	Length getDistanceTraveled();
 	int getMeasurementCount();
+	double getTripStandardError();
 
-	void updateStats(double errv, double dist);
+	void updateStats(Length errv, Length dist);
 	ptime getStartTime();
 	void startStats();
 
@@ -47,8 +48,8 @@ private:
 	
 	boost::mutex _statsMutex;
 	ptime _startTime;
-	double _sumErrorSquares;
-	double _sumDistanceTraveled;
+	Length _sumErrorSquares;
+	Length _sumDistanceTraveled;
 	int _errorMeasureCount;
 
 };

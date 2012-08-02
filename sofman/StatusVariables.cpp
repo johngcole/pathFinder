@@ -7,8 +7,8 @@ _carAtt(Attitude::INVALID_ATT),
 _pathMutex()
 {
 	_path.reset();
-	_sumErrorSquares = 0.0;
-	_sumDistanceTraveled = 0.0;
+	_sumErrorSquares = Length(0.0,Length::METERS);
+	_sumDistanceTraveled = Length(0.0,Length::METERS);
 	_errorMeasureCount = 0;
 }
 StatusVariables::~StatusVariables() {
@@ -51,10 +51,10 @@ boost::shared_ptr<Path> StatusVariables::getPath() {
 	return pathPtr;
 }
 
-void StatusVariables::updateStats(double errv, double dist) {
+void StatusVariables::updateStats(Length errv, Length dist) {
 	_statsMutex.lock();
-	_sumErrorSquares += pow(errv,2);
-	_sumDistanceTraveled += dist;
+	_sumErrorSquares = _sumErrorSquares.plus(Length(pow(errv.getDoubleValue(Length::METERS),2.0),Length::METERS));
+	_sumDistanceTraveled = _sumDistanceTraveled.plus(dist);
 	_errorMeasureCount++;
 	_statsMutex.unlock();
 }
@@ -73,16 +73,16 @@ ptime StatusVariables::getStartTime() {
 	return pt;
 }
 
-double StatusVariables::getErrorValue() {
+Length StatusVariables::getErrorValue() {
 	_statsMutex.lock();
-	double err = _sumErrorSquares;
+	Length err = Length(_sumErrorSquares);
 	_statsMutex.unlock();
 	return err;
 }
 
-double StatusVariables::getDistanceTraveled() {
+Length StatusVariables::getDistanceTraveled() {
 	_statsMutex.lock();
-	double dist = _sumDistanceTraveled;
+	Length dist = _sumDistanceTraveled;
 	_statsMutex.unlock();
 	return dist;
 }
@@ -94,5 +94,10 @@ int StatusVariables::getMeasurementCount() {
 	return cnt;
 }
 
-
-
+double StatusVariables::getTripStandardError() {
+	_statsMutex.lock();
+	double err = sqrt(_sumErrorSquares.getDoubleValue(Length::METERS)) /sqrt(_errorMeasureCount);
+	_statsMutex.unlock();
+	return err;
+}
+	
