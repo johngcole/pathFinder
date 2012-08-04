@@ -1,3 +1,6 @@
 _out_
 *.txt
 *.o
+*.Rdata
+*.Rhistory
+*.jpg
