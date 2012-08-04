@@ -10,6 +10,7 @@ _pathMutex()
 	_sumErrorSquares = Length(0.0,Length::METERS);
 	_sumDistanceTraveled = Length(0.0,Length::METERS);
 	_errorMeasureCount = 0;
+	f = NULL;
 }
 StatusVariables::~StatusVariables() {
 }
@@ -57,6 +58,11 @@ void StatusVariables::updateStats(Length errv, Length dist) {
 	_sumDistanceTraveled = _sumDistanceTraveled.plus(dist);
 	_errorMeasureCount++;
 	_statsMutex.unlock();
+	_errFileMutex.lock();
+	if (f != NULL)
+	  fprintf(f,"%f\n",errv.getDoubleValue(Length::METERS));
+	_errFileMutex.unlock();
+
 }
 
 
@@ -101,3 +107,18 @@ double StatusVariables::getTripStandardError() {
 	return err;
 }
 	
+int StatusVariables::openErrorFile(char *fn) {
+  _errFileMutex.lock();
+  f = fopen(fn,"wr");
+  _errFileMutex.unlock();
+  if (f != NULL)
+    return 1;
+  else
+    return -1;
+}
+
+void StatusVariables::closeErrorFile() {
+  _errFileMutex.lock();
+  fclose(f);
+  _errFileMutex.unlock();
+}

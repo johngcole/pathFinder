@@ -32,6 +32,7 @@ int main() {
 	Config *config = new Config("./config.txt");
 	StatusVariables *status = new StatusVariables();
 	status->setPath(readConfigPath(config));
+	status->openErrorFile("errors.txt");
 	Graphics *graphics = new DrawstuffGraphics(config, status);
 	ODECar *car = new ODECar(config, status);
 	ManualSteering *steer = new ManualSteering(car);
@@ -66,6 +67,8 @@ int main() {
 	       status->getDistanceTraveled().getDoubleValue(Length::METERS) / status->getPath()->length().getDoubleValue(Length::METERS),
 	       (float) diff.total_seconds() / stdrate);
 	Logger::getInstance()->log(out);
+
+	status->closeErrorFile();
 
 	delete steer;
 	delete car;

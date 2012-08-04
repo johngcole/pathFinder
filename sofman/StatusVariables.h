@@ -8,6 +8,7 @@
 #include <iostream>
 #include <colelib/Position3D.h>
 #include <colelib/Attitude.h>
+#include <stdio.h>
 
 #include "Path.h"
 
@@ -38,6 +39,8 @@ public:
 	ptime getStartTime();
 	void startStats();
 
+	int openErrorFile(char * fn);
+	void closeErrorFile();
 private:
 	boost::mutex _carMutex;
 	Position3D _carPos;
@@ -52,6 +55,10 @@ private:
 	Length _sumDistanceTraveled;
 	int _errorMeasureCount;
 
+	boost::mutex _errFileMutex;
+
+	FILE *f;
+	  
 };
 
 
