@@ -256,21 +256,26 @@ void ODECar::ODEThread(void *arg) {
 
 			// post position to status
 			const dReal* pos = dGeomGetPosition(ode->_carBox[0]);
-			dVector3 sides;
-			dGeomBoxGetLengths(ode->_carBox[0],sides);
 			Length x( pos[0], Length::METERS );
 			Length y( pos[1], Length::METERS );
 			Length z( pos[2], Length::METERS );
 			Position3D position(x,y,z);
 			//Logger::getInstance()->log("Position: " + position.toString());
-
 			// get the old position first to allow update to distance traveled
 			Position3D oldpos = ode->_status->getCarPosition();
 			ode->_status->setCarPosition( position );
 
+			const dReal* R = dGeomGetRotation(ode->_carBox[0]);
+			NorthBearingAngle yaw = Angle(atan2(R[4], R[0]), Angle::RADIANS).toNorthBearing();
+			double p = atan2(-R[8], sqrt(R[9]*R[9] + R[10]*R[10]));
+			Angle pitch( p, Angle::RADIANS );
+			Angle roll( atan2(R[9], R[10]), Angle::RADIANS );
+			Attitude att( roll, pitch, yaw );
+			//Logger::getInstance()->log(att.toString());
+			ode->_status->setCarAttitude(att);
+
 			// update the path error in status
-			ode->_status->getPath()->fillPathError(position,
-			    NorthBearingAngle(0.0,NorthBearingAngle::DEGREES), pe);
+			ode->_status->getPath()->fillPathError(position, att.getYaw(), pe);
 			ode->_status->updateStats(pe.DistanceError,
 						  position.getGroundRangeTo(oldpos));
 

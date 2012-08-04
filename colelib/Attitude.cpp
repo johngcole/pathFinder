@@ -37,9 +37,9 @@ NorthBearingAngle Attitude::getYaw() const {
 
 string Attitude::toString() {
 	string ret("Attitude: <");
-	ret += _roll.toString() + " ";
-	ret += _pitch.toString() + " ";
-	ret += _yaw.toString() + ">";
+	ret += _roll.correctHalfCircle().toString() + " ";
+	ret += _pitch.correctHalfCircle().toString() + " ";
+	ret += _yaw.correctFullCircle().toString() + ">";
 	return ret;
 }
 

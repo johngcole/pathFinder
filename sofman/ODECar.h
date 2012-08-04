@@ -6,9 +6,11 @@
 #include <ode/ode.h>
 #include <colelib/Stoppable.h>
 #include <colelib/Config.h>
+#include <colelib/Constants.h>
 #include "StatusVariables.h"
 
 using namespace cole::thread;
+using namespace cole::util;
 
 #define LENGTH 0.7	// chassis length
 #define WIDTH 0.5	// chassis width
