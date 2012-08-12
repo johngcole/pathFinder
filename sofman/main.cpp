@@ -9,6 +9,8 @@
 #include "DrawstuffGraphics.h"
 #include "ODECar.h"
 #include "ManualSteering.h"
+#include "AutoSteering.h"
+#include "ControlLoopSteering.h"
 #include "Path.h"
 #include "CompositePath.h"
 #include "StraightPath.h"
@@ -35,18 +37,33 @@ int main() {
 	status->openErrorFile("errors.txt");
 	Graphics *graphics = new DrawstuffGraphics(config, status);
 	ODECar *car = new ODECar(config, status);
-	ManualSteering *steer = new ManualSteering(car);
+
+	ManualSteering *man_steer = NULL;
+	AutoSteering *auto_steer = NULL;
+
+	string steer_str = config->getValue("Steering");
+	if (steer_str == "manual") {
+		man_steer = new ManualSteering(car);
+	} else if (steer_str == "controlloop") {
+		int periodMs = config->getValueAsInt("AutoSteerPeriod_Ms");
+		auto_steer = new ControlLoopSteering(car, status, config, periodMs);
+	}
 
 	graphics->AttachODECar(car);
-	graphics->AttachKeyListener(steer);
+	if (man_steer != NULL)
+		graphics->AttachKeyListener(man_steer);
 	graphics->Start();
 	car->Start();
+	if (auto_steer != NULL)
+		auto_steer->Start();
 
 	Logger::getInstance()->log("Starting statistics...");
 	status->startStats();
 
 	graphics->Join();  // wait on graphics, so user can hit "Escape"
 
+	if (auto_steer != NULL)
+		auto_steer->Stop();
 	car->Stop();
 
 	boost::posix_time::ptime t2 = boost::posix_time::microsec_clock::local_time();
@@ -70,7 +87,11 @@ int main() {
 
 	status->closeErrorFile();
 
-	delete steer;
+	// clean up
+	if (auto_steer != NULL)
+		delete auto_steer;
+	if (man_steer != NULL)
+		delete man_steer;
 	delete car;
 	delete graphics;
 	delete status;

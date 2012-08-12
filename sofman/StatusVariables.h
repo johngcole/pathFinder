@@ -39,7 +39,7 @@ public:
 	ptime getStartTime();
 	void startStats();
 
-	int openErrorFile(char * fn);
+	int openErrorFile(const char * fn);
 	void closeErrorFile();
 private:
 	boost::mutex _carMutex;

@@ -1,7 +1,15 @@
 
 PathToTextures = /usr/include/drawstuff/textures
-DrawStuffNumPathVerts = 200
 
+# Steering = manual
+
+Steering = controlloop
+AutoSteerPeriod_Ms = 50
+ControlLoop_Kp = 5.0
+ControlLoop_Ki = 0.0
+ControlLoop_Kd = 0.0
+
+DrawStuffNumPathVerts = 200
 NumPathPieces = 17
 
 Path0_Type = StraightPath

@@ -107,7 +107,7 @@ double StatusVariables::getTripStandardError() {
 	return err;
 }
 	
-int StatusVariables::openErrorFile(char *fn) {
+int StatusVariables::openErrorFile(const char *fn) {
   _errFileMutex.lock();
   f = fopen(fn,"wr");
   _errFileMutex.unlock();
