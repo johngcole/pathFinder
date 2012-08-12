@@ -6,6 +6,8 @@ AutoSteering(car, status, periodMs) {
 	K_p = config->getValueAsDouble("ControlLoop_Kp");
 	K_i = config->getValueAsDouble("ControlLoop_Ki");
 	K_d = config->getValueAsDouble("ControlLoop_Kd");
+	_maxSpeed = config->getValueAsDouble("ControlLoop_MaxSpeed");
+	_maxSpeed = MAX( 0.1, MIN(1.0, _maxSpeed) );
 
 	_e_last = 0.0;
 	_e_sum = 0.0;
@@ -37,7 +39,7 @@ void ControlLoopSteering::fillCommands(PathError &err, float *speed, float *stee
 
 	*steering = P + I + D;
 	double steer = MIN( MAX( *steering, -0.5f ), 0.5f );
-	*speed = (0.5 - abs(steer)) * 2.0;
+	*speed = (0.5 - abs(steer)) * _maxSpeed;
 	*speed = MAX( *speed, 0.1 );
 
 	ostringstream oss;

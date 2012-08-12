@@ -8,6 +8,7 @@ AutoSteerPeriod_Ms = 50
 ControlLoop_Kp = 5.0
 ControlLoop_Ki = 0.0
 ControlLoop_Kd = 0.0
+ControlLoop_MaxSpeed = 0.5
 
 DrawStuffNumPathVerts = 200
 NumPathPieces = 17

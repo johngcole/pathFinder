@@ -29,6 +29,7 @@ private:
 	double computeError( PathError &err );
 
 	double K_p, K_i, K_d;
+	double _maxSpeed;
 	double _e_last, _e_sum;
 };
 
