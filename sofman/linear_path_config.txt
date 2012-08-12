@@ -1,0 +1,150 @@
+
+PathToTextures = /usr/include/drawstuff/textures
+
+# Steering = manual
+
+Steering = controlloop
+AutoSteerPeriod_Ms = 50
+ControlLoop_Kp = 5.0
+ControlLoop_Ki = 0.0
+ControlLoop_Kd = 0.0
+ControlLoop_MaxSpeed = 0.5
+
+DrawStuffNumPathVerts = 200
+NumPathPieces = 17
+
+Path0_Type = StraightPath
+Path0_StartX = 0
+Path0_StartY = 0
+Path0_StartZ = 0
+Path0_EndX = 8
+Path0_EndY = 4
+Path0_EndZ = 0
+
+Path1_Type = StraightPath
+Path1_StartX = 8
+Path1_StartY = 4
+Path1_StartZ = 0
+Path1_EndX = 14
+Path1_EndY = 14
+Path1_EndZ = 0
+
+Path2_Type = StraightPath
+Path2_StartX = 14
+Path2_StartY = 14
+Path2_StartZ = 0
+Path2_EndX = 16
+Path2_EndY = 22
+Path2_EndZ = 0
+
+Path3_Type = StraightPath
+Path3_StartX = 16
+Path3_StartY = 22
+Path3_StartZ = 0
+Path3_EndX = 16
+Path3_EndY = 26
+Path3_EndZ = 0
+
+Path4_Type = StraightPath
+Path4_StartX = 16
+Path4_StartY = 26
+Path4_StartZ = 0
+Path4_EndX = 14
+Path4_EndY = 30
+Path4_EndZ = 0
+
+Path5_Type = StraightPath
+Path5_StartX = 14
+Path5_StartY = 30
+Path5_StartZ = 0
+Path5_EndX = 14
+Path5_EndY = 36
+Path5_EndZ = 0
+
+Path6_Type = StraightPath
+Path6_StartX = 14
+Path6_StartY = 36
+Path6_StartZ = 0
+Path6_EndX = 18
+Path6_EndY = 42
+Path6_EndZ = 0
+
+Path7_Type = StraightPath
+Path7_StartX = 18
+Path7_StartY = 42
+Path7_StartZ = 0
+Path7_EndX = 26
+Path7_EndY = 44
+Path7_EndZ = 0
+
+Path8_Type = StraightPath
+Path8_StartX = 26
+Path8_StartY = 44
+Path8_StartZ = 0
+Path8_EndX = 32
+Path8_EndY = 38
+Path8_EndZ = 0
+
+Path9_Type = StraightPath
+Path9_StartX = 32
+Path9_StartY = 38
+Path9_StartZ = 0
+Path9_EndX = 36
+Path9_EndY = 30
+Path9_EndZ = 0
+
+Path10_Type = StraightPath
+Path10_StartX = 36
+Path10_StartY = 30
+Path10_StartZ = 0
+Path10_EndX = 34
+Path10_EndY = 20
+Path10_EndZ = 0
+
+Path11_Type = StraightPath
+Path11_StartX = 34
+Path11_StartY = 20
+Path11_StartZ = 0
+Path11_EndX = 38
+Path11_EndY = 6
+Path11_EndZ = 0
+
+Path12_Type = StraightPath
+Path12_StartX = 38
+Path12_StartY = 6
+Path12_StartZ = 0
+Path12_EndX = 38
+Path12_EndY = 0
+Path12_EndZ = 0
+
+Path13_Type = StraightPath
+Path13_StartX = 38
+Path13_StartY = 0
+Path13_StartZ = 0
+Path13_EndX = 34
+Path13_EndY = -6
+Path13_EndZ = 0
+
+Path14_Type = StraightPath
+Path14_StartX = 34
+Path14_StartY = -6
+Path14_StartZ = 0
+Path14_EndX = 22
+Path14_EndY = -10
+Path14_EndZ = 0
+
+Path15_Type = StraightPath
+Path15_StartX = 22
+Path15_StartY = -10
+Path15_StartZ = 0
+Path15_EndX = 10
+Path15_EndY = -6
+Path15_EndZ = 0
+
+Path16_Type = StraightPath
+Path16_StartX = 10
+Path16_StartY = -6
+Path16_StartZ = 0
+Path16_EndX = 0
+Path16_EndY = 0
+Path16_EndZ = 0
