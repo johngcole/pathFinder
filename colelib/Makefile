@@ -6,6 +6,9 @@ ifeq ($(HOST), gray-ubnetbook)
 else ifeq ($(shell hostname), e6500.lgltex.lgl) 
 	DEPLOY_LIB_DIR = /usr/lib64
 	DEPLOY_HDR_DIR = /usr/include/colelib
+else ifeq ($(HOST), slacking)
+	DEPLOY_LIB_DIR = /home/gray/colelib
+	DEPLOY_HDR_DIR = /home/gray/colelib
 else
 	$(error Unknown host: $(HOST))
 endif

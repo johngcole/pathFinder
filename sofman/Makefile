@@ -11,7 +11,8 @@ ifeq ($(BUILD_TYPE), debug)
 	CFLAGS += -g
 endif
 DEFINES = 
-INC = 
+INC = -I../
+LIB_INC = -L../colelib/
 LIBS = -lcole
 LIBS += -lboost_date_time
 LIBS += -lX11
@@ -20,6 +21,10 @@ LIBS += -lm
 LIBS += -lode
 
 ifeq ($(HOST), gray-ubnetbook)
+	CFLAGS += -O2
+	DEFINES += -DdDOUBLE
+	LIBS += -lboost_thread
+else ifeq ($(shell hostname), slacking) 
 	CFLAGS += -O2
 	DEFINES += -DdDOUBLE
 	LIBS += -lboost_thread
@@ -37,7 +42,7 @@ out : $(OUT_EXE)
 	$(CC) $(CFLAGS) $(INC) $(DEFINES) -o $@ $<
 
 $(OUT_EXE) : $(O_FILES)
-	$(CC) -o $@ $(O_FILES) $(LIBS)
+	$(CC) -o $@ $(O_FILES) $(LIB_INC) $(LIBS)
 
 clean:
 	rm -f *.o $(OUT_EXE)
