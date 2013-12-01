@@ -20,11 +20,7 @@ LIBS += -lGL -lGLU -lglut
 LIBS += -lm
 LIBS += -lode
 
-ifeq ($(HOST), gray-ubnetbook)
-	CFLAGS += -O2
-	DEFINES += -DdDOUBLE
-	LIBS += -lboost_thread
-else ifeq ($(shell hostname), slacking) 
+ifeq ($(HOST), netbian)
 	CFLAGS += -O2
 	DEFINES += -DdDOUBLE
 	LIBS += -lboost_thread

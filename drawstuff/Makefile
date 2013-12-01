@@ -1,6 +1,6 @@
 HOST = $(shell hostname)
 
-ifeq ($(HOST), gray-ubnetbook)
+ifeq ($(HOST), netbian)
 	DEPLOY_LIB_DIR = /usr/lib
 	DEPLOY_HDR_DIR = /usr/include/drawstuff
 else ifeq ($(HOST), e6500.lgltex.lgl) 
