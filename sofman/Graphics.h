@@ -23,7 +23,7 @@ using namespace std;
 class Graphics : public Stoppable {
 public:
 	Graphics(Config *config, StatusVariables *status);
-	~Graphics();
+	virtual ~Graphics();
 
 	// re-implements Stoppable functions
 	virtual void Start() = 0;

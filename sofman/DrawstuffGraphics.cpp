@@ -37,7 +37,7 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 	int screen = 0;
 	XVisualInfo *visual = 0; // best visual for openGL
 	Colormap colormap = 0; // window's colormap
-	Atom wm_protocols_atom = 0;
+	//Atom wm_protocols_atom = 0;
 	Atom wm_delete_window_atom = 0;
 	GLfloat light_ambient[] = { 0.5, 0.5, 0.5, 1.0 };
 	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -52,7 +52,7 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 
 	// create X11 display connection
 	display = XOpenDisplay(NULL);
-	if (!display)
+    if (!display)
 		Logger::getInstance()->log("can not open X11 display");
 	screen = DefaultScreen(display);
 
@@ -101,7 +101,7 @@ void DrawstuffGraphics::DStuffThread(void *arg) {
 	XSetWMName(display, win, &window_name);
 
 	// participate in the window manager 'delete yourself' protocol
-	wm_protocols_atom = XInternAtom(display, "WM_PROTOCOLS", False);
+    XInternAtom(display, "WM_PROTOCOLS", False);
 	wm_delete_window_atom = XInternAtom(display, "WM_DELETE_WINDOW", False);
 	if (XSetWMProtocols(display, win, &wm_delete_window_atom, 1) == 0)
 		Logger::getInstance()->log("XSetWMProtocols() call failed");

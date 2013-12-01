@@ -20,7 +20,7 @@ using namespace std;
 class AutoSteering : public Stoppable {
 public:
 	AutoSteering(ODECar *car, StatusVariables *status, int periodMs);
-	~AutoSteering() {}
+	virtual ~AutoSteering() {}
 
 	virtual void Start();
 

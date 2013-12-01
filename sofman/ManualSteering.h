@@ -22,7 +22,7 @@ using namespace std;
 class ManualSteering : public KeyListener {
 public:
 	ManualSteering(ODECar *car);
-	~ManualSteering();
+	virtual ~ManualSteering();
 
 	void keyUp(short key);
 	void keyDown(short key);

@@ -25,7 +25,7 @@ using namespace cole::util;
 class ODECar: public Stoppable {
 public:
 	ODECar(Config *config, StatusVariables *status);
-	~ODECar();
+	virtual ~ODECar();
 
 	// Stoppable interface
 	void Start();
