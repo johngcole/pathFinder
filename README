@@ -2,5 +2,22 @@ README for pathFinder application
 
 This is an ODE based simulation to create a path following vehicle
 
+Required installs
+--------------------
+Boost  (apt-get install libboost-all-dev)
+ODE    (apt-get install libode-dev)
+X11    (apt-get install libx11-dev)
+OpenGL (apt-get install freeglut-dev)
+
+cd colelib
+make
+cd ../drawstuff
+make
+sudo make deploy
+cd ../sofman
+make
+ln -s track_config.txt config.txt
+./_out_
+
 Project is run by 
 John Grady Pace Cole and John Grady Cole
