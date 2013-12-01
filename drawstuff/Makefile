@@ -6,6 +6,9 @@ ifeq ($(HOST), netbian)
 else ifeq ($(HOST), e6500.lgltex.lgl) 
 	DEPLOY_LIB_DIR = /usr/lib64
 	DEPLOY_HDR_DIR = /usr/include/drawstuff
+else ifeq ($(HOST), cole-XPS-linux) 
+	DEPLOY_LIB_DIR = /usr/lib
+	DEPLOY_HDR_DIR = /usr/include/drawstuff
 else
 	$(error Unknown host: $(HOST))
 endif

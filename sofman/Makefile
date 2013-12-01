@@ -28,6 +28,11 @@ else ifeq ($(shell hostname), e6500.lgltex.lgl)
 	CFLAGS += -v
 	CFLAGS += -std=c++0x
 	LIBS += -lboost_thread-mt
+else ifeq ($(shell hostname), cole-XPS-linux) 
+	CFLAGS += -v
+	DEFINES += -DdDOUBLE
+	CFLAGS += -std=c++0x
+	LIBS += -lboost_thread
 else
 $(error Unknown host: $(HOST))
 endif

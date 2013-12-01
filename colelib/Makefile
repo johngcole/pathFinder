@@ -9,6 +9,9 @@ else ifeq ($(shell hostname), e6500.lgltex.lgl)
 else ifeq ($(HOST), slacking)
 	DEPLOY_LIB_DIR = /home/gray/colelib
 	DEPLOY_HDR_DIR = /home/gray/colelib
+else ifeq ($(shell hostname), cole-XPS-linux) 
+	DEPLOY_LIB_DIR = /usr/lib
+	DEPLOY_HDR_DIR = /usr/include/colelib
 else
 	$(error Unknown host: $(HOST))
 endif
